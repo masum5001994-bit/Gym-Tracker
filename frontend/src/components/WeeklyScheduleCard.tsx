@@ -226,13 +226,13 @@ export const WeeklyScheduleCard: React.FC = () => {
                     navigate(`/workout/${item.routineId || 'custom-session'}`);
                   }
                 }}
-                className="flex items-center justify-between gap-1.5 px-2.5 py-2 cursor-pointer select-none"
+                className="flex items-center justify-between gap-2 px-3 py-2.5 cursor-pointer select-none"
               >
                 {/* Left: Day Badge + Title + Tag */}
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className={`text-[9px] font-black uppercase font-mono px-1.5 py-0.5 rounded border shrink-0 ${
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <span className={`text-[11px] font-black uppercase font-mono px-2 py-0.5 rounded-lg border shrink-0 ${
                     isActive
-                      ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold'
+                      ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold shadow-sm'
                       : isPast
                       ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                       : 'bg-slate-900 text-slate-400 border-slate-800'
@@ -240,18 +240,18 @@ export const WeeklyScheduleCard: React.FC = () => {
                     {item.dayLabel}
                   </span>
 
-                  <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
-                    <h4 className="text-xs font-black text-slate-100 uppercase tracking-tight font-condensed truncate">
+                  <div className="min-w-0 flex-1 flex items-baseline gap-2">
+                    <h4 className="text-sm sm:text-base font-black text-slate-100 uppercase tracking-tight font-condensed truncate">
                       {item.title}
                     </h4>
-                    <span className="text-[9px] text-slate-400 font-semibold truncate hidden sm:inline">
-                      ({item.focus})
+                    <span className="text-[11px] text-slate-400 font-semibold truncate hidden sm:inline">
+                      • {item.focus}
                     </span>
                   </div>
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   {isActive && item.type === 'workout' ? (
                     <button
                       onClick={(e) => {
@@ -259,14 +259,14 @@ export const WeeklyScheduleCard: React.FC = () => {
                         triggerHaptic('medium');
                         navigate(`/workout/${item.routineId || 'custom-session'}`);
                       }}
-                      className="flex items-center gap-1 rounded-md bg-amber-400 text-slate-950 px-2 py-0.5 text-[10px] font-black uppercase font-condensed shadow-sm apple-press"
+                      className="flex items-center gap-1 rounded-lg bg-amber-400 text-slate-950 px-3 py-1 text-xs font-black uppercase font-condensed shadow-sm apple-press"
                     >
-                      <Play className="h-2.5 w-2.5 fill-current" />
+                      <Play className="h-3 w-3 fill-current" />
                       <span>START</span>
                     </button>
                   ) : isPast ? (
-                    <div className="flex items-center gap-1">
-                      <span className="text-[9px] font-bold text-emerald-400 font-mono">✓ DONE</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-emerald-400 font-mono">✓ DONE</span>
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
@@ -279,19 +279,19 @@ export const WeeklyScheduleCard: React.FC = () => {
                             }
                           }
                         }}
-                        className="flex items-center gap-0.5 text-[8px] font-black text-rose-300 bg-rose-500/20 border border-rose-500/30 px-1 py-0.5 rounded uppercase font-condensed apple-press"
+                        className="flex items-center gap-1 text-[10px] font-black text-rose-300 bg-rose-500/20 border border-rose-500/30 px-2 py-0.5 rounded-lg uppercase font-condensed apple-press"
                         title="Reset Day Status"
                       >
-                        <RotateCcw className="h-2 w-2 text-rose-400" />
+                        <RotateCcw className="h-2.5 w-2.5 text-rose-400" />
                         <span>Reset</span>
                       </button>
                     </div>
                   ) : item.type === 'rest' ? (
-                    <span className="text-[9px] font-bold text-slate-400 font-mono flex items-center gap-0.5">
-                      <Moon className="h-2.5 w-2.5 text-amber-400" /> REST
+                    <span className="text-xs font-extrabold text-slate-400 font-mono flex items-center gap-1">
+                      <Moon className="h-3 w-3 text-amber-400" /> REST
                     </span>
                   ) : (
-                    <span className="text-[9px] font-bold text-slate-500 font-mono">READY</span>
+                    <span className="text-xs font-bold text-slate-500 font-mono">READY</span>
                   )}
 
                   {/* Drawer Toggle */}
@@ -300,10 +300,11 @@ export const WeeklyScheduleCard: React.FC = () => {
                     className="p-1 rounded text-slate-400 hover:text-slate-100 apple-press"
                     title={isExpanded ? 'Collapse Details' : 'Expand Movements'}
                   >
-                    <Layers className={`h-3 w-3 ${isExpanded ? 'text-amber-400' : 'text-slate-500'}`} />
+                    <Layers className={`h-3.5 w-3.5 ${isExpanded ? 'text-amber-400' : 'text-slate-500'}`} />
                   </button>
                 </div>
               </div>
+
 
               {/* Drawer preview details */}
               {isExpanded && (
