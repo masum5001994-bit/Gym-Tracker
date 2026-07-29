@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Builds
+dist/
+build/
+
+# Environment and Local Config
+.env
+.env.local
+*.env
+
+# Firebase & IDE
+.firebase/
+.firebaserc
+.antigravity/
+.DS_Store
+
+# Logs
+*.log

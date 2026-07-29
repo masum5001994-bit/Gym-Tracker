@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070c18"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1e40af"/>
+    </linearGradient>
+    <linearGradient id="panelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1329"/>
+      <stop offset="100%" stop-color="#111c38"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Surface -->
+  <rect width="800" height="600" fill="url(#bgGrad)"/>
+  
+  <!-- Outer Border -->
+  <rect x="5" y="5" width="790" height="590" rx="20" fill="none" stroke="#2563eb" stroke-width="2" stroke-opacity="0.5"/>
+
+  <!-- Top BWS Header Banner -->
+  <rect x="25" y="20" width="750" height="50" rx="14" fill="url(#headerGrad)"/>
+  <text x="45" y="52" font-family="Barlow, sans-serif" font-weight="900" font-size="22" fill="#FFFFFF" letter-spacing="1.5">
+    BUILT WITH <tspan fill="#facc15">SCIENCE™</tspan> — FLAT DUMBBELL PRESS GUIDE
+  </text>
+  <rect x="650" y="32" width="105" height="26" rx="6" fill="#facc15"/>
+  <text x="702" y="49" font-family="Barlow, sans-serif" font-weight="900" font-size="12" fill="#070c18" text-anchor="middle">
+    CHEST • PAGE 26
+  </text>
+
+  <!-- 4-Panel Grid Containers -->
+  
+  <!-- Panel 1: Step 1 Setup -->
+  <g transform="translate(25, 85)">
+    <rect width="365" height="230" rx="14" fill="url(#panelGrad)" stroke="#1d4ed8" stroke-width="1.5" stroke-opacity="0.6"/>
+    <!-- Header -->
+    <rect x="15" y="15" width="140" height="24" rx="6" fill="#2563eb" fill-opacity="0.3" stroke="#2563eb" stroke-width="1"/>
+    <text x="25" y="31" font-family="Barlow, sans-serif" font-weight="900" font-size="12" fill="#60a5fa">
+      STEP 1: SETUP
+    </text>
+    <!-- Vector Illustration of Flat Bench Dumbbell Setup -->
+    <g transform="translate(30, 45)">
+      <!-- Bench -->
+      <rect x="20" y="100" width="260" height="15" rx="4" fill="#334155"/>
+      <rect x="50" y="115" width="12" height="40" fill="#1e293b"/>
+      <rect x="230" y="115" width="12" height="40" fill="#1e293b"/>
+      <!-- Athlete Body Lie Back -->
+      <path d="M 60 95 Q 150 90 240 95" stroke="#f8fafc" stroke-width="18" stroke-linecap="round" fill="none"/>
+      <!-- Head -->
+      <circle cx="50" cy="92" r="14" fill="#f8fafc"/>
+      <!-- Arms Holding Dumbbells Over Chest -->
+      <line x1="140" y1="90" x2="140" y2="40" stroke="#facc15" stroke-width="8" stroke-linecap="round"/>
+      <line x1="170" y1="90" x2="170" y2="40" stroke="#facc15" stroke-width="8" stroke-linecap="round"/>
+      <!-- Dumbbells -->
+      <rect x="125" y="32" width="30" height="12" rx="3" fill="#64748b"/>
+      <rect x="155" y="32" width="30" height="12" rx="3" fill="#64748b"/>
+      <!-- Alignment Dotted Line -->
+      <line x1="140" y1="40" x2="140" y2="100" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4"/>
+    </g>
+    <!-- Label -->
+    <text x="20" y="215" font-family="Barlow, sans-serif" font-weight="700" font-size="11" fill="#94a3b8">
+      Sit on edge, kick up DBs, lay back with arched back.
+    </text>
+  </g>
+
+  <!-- Panel 2: Step 2 Descent Angle -->
+  <g transform="translate(410, 85)">
+    <rect width="365" height="230" rx="14" fill="url(#panelGrad)" stroke="#1d4ed8" stroke-width="1.5" stroke-opacity="0.6"/>
+    <rect x="15" y="15" width="160" height="24" rx="6" fill="#d97706" fill-opacity="0.3" stroke="#facc15" stroke-width="1"/>
+    <text x="25" y="31" font-family="Barlow, sans-serif" font-weight="900" font-size="12" fill="#facc15">
+      STEP 2: DESCENT (45-60°)
+    </text>
+    <!-- Vector Illustration of Descent -->
+    <g transform="translate(30, 45)">
+      <!-- Bench -->
+      <rect x="20" y="100" width="260" height="15" rx="4" fill="#334155"/>
+      <rect x="50" y="115" width="12" height="40" fill="#1e293b"/>
+      <rect x="230" y="115" width="12" height="40" fill="#1e293b"/>
+      <!-- Torso -->
+      <path d="M 60 95 Q 150 90 240 95" stroke="#f8fafc" stroke-width="18" stroke-linecap="round" fill="none"/>
+      <!-- Head -->
+      <circle cx="50" cy="92" r="14" fill="#f8fafc"/>
+      <!-- Elbows Tucked at 45-60 Deg -->
+      <path d="M 150 90 L 120 70 L 115 55" stroke="#facc15" stroke-width="8" stroke-linecap="round" fill="none"/>
+      <path d="M 170 90 L 200 70 L 205 55" stroke="#facc15" stroke-width="8" stroke-linecap="round" fill="none"/>
+      <!-- Dumbbells at Lower Chest Level -->
+      <rect x="100" y="48" width="30" height="12" rx="3" fill="#64748b"/>
+      <rect x="190" y="48" width="30" height="12" rx="3" fill="#64748b"/>
+      <!-- Angle Indicator -->
+      <path d="M 150 90 L 110 90 A 40 40 0 0 1 125 65" fill="none" stroke="#38bdf8" stroke-width="2"/>
+      <text x="100" y="85" font-family="Barlow, sans-serif" font-weight="800" font-size="10" fill="#38bdf8">45°-60°</text>
+    </g>
+    <text x="20" y="215" font-family="Barlow, sans-serif" font-weight="700" font-size="11" fill="#94a3b8">
+      Lower with elbows tucked at 45-60° to torso level.
+    </text>
+  </g>
+
+  <!-- Panel 3: Step 3 Press & Chest Lockout -->
+  <g transform="translate(25, 335)">
+    <rect width="365" height="235" rx="14" fill="url(#panelGrad)" stroke="#1d4ed8" stroke-width="1.5" stroke-opacity="0.6"/>
+    <rect x="15" y="15" width="160" height="24" rx="6" fill="#10b981" fill-opacity="0.3" stroke="#10b981" stroke-width="1"/>
+    <text x="25" y="31" font-family="Barlow, sans-serif" font-weight="900" font-size="12" fill="#34d399">
+      STEP 3: PRESS LOCKOUT
+    </text>
+    <!-- Vector Illustration of Pressing Up -->
+    <g transform="translate(30, 45)">
+      <!-- Bench -->
+      <rect x="20" y="100" width="260" height="15" rx="4" fill="#334155"/>
+      <!-- Torso -->
+      <path d="M 60 95 Q 150 90 240 95" stroke="#f8fafc" stroke-width="18" stroke-linecap="round" fill="none"/>
+      <!-- Head -->
+      <circle cx="50" cy="92" r="14" fill="#f8fafc"/>
+      <!-- Arms Extended Straight Up Over Shoulders -->
+      <line x1="145" y1="90" x2="150" y2="35" stroke="#34d399" stroke-width="8" stroke-linecap="round"/>
+      <line x1="165" y1="90" x2="160" y2="35" stroke="#34d399" stroke-width="8" stroke-linecap="round"/>
+      <!-- Dumbbells at Top Lockout -->
+      <rect x="135" y="27" width="30" height="12" rx="3" fill="#64748b"/>
+      <rect x="148" y="27" width="30" height="12" rx="3" fill="#64748b"/>
+      <!-- Upward Force Arrows -->
+      <line x1="150" y1="75" x2="150" y2="45" stroke="#facc15" stroke-width="3"/>
+      <polygon points="150,40 145,50 155,50" fill="#facc15"/>
+    </g>
+    <text x="20" y="220" font-family="Barlow, sans-serif" font-weight="700" font-size="11" fill="#94a3b8">
+      Drive dumbbells straight up, bringing biceps together.
+    </text>
+  </g>
+
+  <!-- Panel 4: Anatomical Muscle Focus & Cues -->
+  <g transform="translate(410, 335)">
+    <rect width="365" height="235" rx="14" fill="url(#panelGrad)" stroke="#facc15" stroke-width="1.5" stroke-opacity="0.8"/>
+    <rect x="15" y="15" width="170" height="24" rx="6" fill="#facc15" fill-opacity="0.2" stroke="#facc15" stroke-width="1"/>
+    <text x="25" y="31" font-family="Barlow, sans-serif" font-weight="900" font-size="12" fill="#facc15">
+      PANEL 4: ANATOMICAL CUES
+    </text>
+    <g transform="translate(25, 55)">
+      <!-- Muscle Badge -->
+      <rect x="0" y="5" width="315" height="40" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+      <text x="15" y="30" font-family="Barlow, sans-serif" font-weight="800" font-size="13" fill="#f8fafc">
+        PRIMARY TARGET: <tspan fill="#facc15">PECTORALIS MAJOR (CHEST)</tspan>
+      </text>
+      <!-- Cue 1 -->
+      <text x="10" y="70" font-family="Barlow, sans-serif" font-weight="700" font-size="12" fill="#38bdf8">
+        ✓ Pin shoulder blades back into the bench.
+      </text>
+      <!-- Cue 2 -->
+      <text x="10" y="95" font-family="Barlow, sans-serif" font-weight="700" font-size="12" fill="#38bdf8">
+        ✓ Avoid flaring elbows straight out to 90 degrees.
+      </text>
+      <!-- Cue 3 -->
+      <text x="10" y="120" font-family="Barlow, sans-serif" font-weight="700" font-size="12" fill="#38bdf8">
+        ✓ Plant feet firmly into floor for leg drive stability.
+      </text>
+      <!-- Tempo -->
+      <rect x="0" y="135" width="315" height="30" rx="6" fill="#070c18" stroke="#334155" stroke-width="1"/>
+      <text x="15" y="155" font-family="Barlow, sans-serif" font-weight="800" font-size="11" fill="#facc15">
+        TEMPO: 2s Eccentric Descent • 1s Pause • Explosive Press
+      </text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,85 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String       @id @default(uuid())
+  email           String       @unique
+  name            String?
+  unit            String       @default("kg")
+  workoutLogs     WorkoutLog[]
+  createdRoutines Routine[]
+  createdAt       DateTime     @default(now())
+}
+
+model Exercise {
+  id           String        @id @default(uuid())
+  name         String
+  category     String        // Chest, Back, Shoulders, Quads, Hamstrings, Glutes, Triceps, Biceps, Calves
+  defaultSets  Int           @default(3)
+  targetReps   String        // e.g. "8-10"
+  minReps      Int           @default(8)
+  maxReps      Int           @default(10)
+  restSeconds  Int           @default(120)
+  notes        String
+  pdfPage      String?       // e.g. "Page 6"
+  step1Setup   String?
+  step2Execution String?
+  step3Execution String?
+  additionalTips String?
+  alternatives String        @default("[]") // JSON stringified array of alternative names
+  isCustom     Boolean       @default(false)
+  exerciseLogs ExerciseLog[]
+}
+
+model Routine {
+  id          String       @id @default(uuid())
+  title       String
+  focus       String
+  description String
+  exerciseIds String       @default("[]") // JSON stringified array of ordered exercise IDs
+  userId      String?      // Null for BWS system presets, User ID for custom
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  workoutLogs WorkoutLog[]
+}
+
+model WorkoutLog {
+  id              String        @id @default(uuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  routineId       String
+  routine         Routine       @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  routineTitle    String
+  date            DateTime      @default(now())
+  durationMinutes Int
+  totalVolumeKg   Float         // Sum of (weightKg * reps)
+  prCount         Int           @default(0)
+  exerciseLogs    ExerciseLog[]
+}
+
+model ExerciseLog {
+  id           String     @id @default(uuid())
+  workoutLogId String
+  workoutLog   WorkoutLog @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
+  exerciseId   String
+  exercise     Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  exerciseName String
+  sets         SetLog[]
+}
+
+model SetLog {
+  id            String      @id @default(uuid())
+  exerciseLogId String
+  exerciseLog   ExerciseLog @relation(fields: [exerciseLogId], references: [id], onDelete: Cascade)
+  setNum        Int
+  weightKg      Float
+  reps          Int
+  effort        String?     // Easy, Medium, Hard, Max effort, Failed
+  completed     Boolean     @default(true)
+  isPR          Boolean     @default(false)
+}

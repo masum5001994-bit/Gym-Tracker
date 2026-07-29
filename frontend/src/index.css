@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #050811;
+    color: #f8fafc;
+    font-family: 'Barlow', 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, h3, h4, .font-condensed {
+    font-family: 'Barlow Condensed', 'Barlow', sans-serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Apple Watch Fitness Ultra Glassmorphism Tokens */
+.glass-panel {
+  background: rgba(11, 15, 25, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 159, 10, 0.25);
+}
+
+.glass-card {
+  background: rgba(20, 26, 40, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 159, 10, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(255, 159, 10, 0.2);
+}
+
+.glow-blue {
+  box-shadow: 0 0 30px -5px rgba(10, 132, 255, 0.6);
+}
+
+.glow-gold {
+  box-shadow: 0 0 30px -5px rgba(255, 159, 10, 0.6);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 30px -5px rgba(48, 209, 88, 0.6);
+}
+
+
+.glow-text-blue {
+  text-shadow: 0 0 16px rgba(59, 130, 246, 0.6);
+}
+
+.glow-text-gold {
+  text-shadow: 0 0 16px rgba(234, 179, 8, 0.6);
+}
+
+/* Pulse animation for rest timer */
+@keyframes ringPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}
+
+.animate-ring-pulse {
+  animation: ringPulse 2.2s infinite ease-in-out;
+}
+
+/* Apple Design Utilities & Physical Motion Tokens */
+
+/* Apple Spring Timing Function */
+.apple-spring {
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Instant 1:1 Touch Response (Kill Latency) */
+.apple-press {
+  touch-action: manipulation;
+  transition: transform 75ms cubic-bezier(0.32, 0.72, 0, 1), opacity 75ms ease-out;
+}
+
+.apple-press:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* Apple Floating Translucent Chrome (Navbar & Tab Bar) */
+.apple-glass-chrome {
+  background: rgba(7, 12, 24, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Apple Display Typography (Optical Negative Tracking) */
+.apple-display-title {
+  font-family: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  font-optical-sizing: auto;
+}
+
+/* Accessibility & Reduced Motion (WWDC 2026) */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-ring-pulse, .animate-ping, .animate-bounce, .animate-spin {
+    animation: none !important;
+  }
+}
+
