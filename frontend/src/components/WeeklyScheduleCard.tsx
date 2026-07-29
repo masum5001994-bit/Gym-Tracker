@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Moon, Play, AlertCircle, RotateCcw, Clock, Layers, Dumbbell, CheckCircle2 } from 'lucide-react';
+import { Calendar, Moon, Play, AlertCircle, RotateCcw, Layers, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { WorkoutLog } from '../types';
@@ -56,11 +56,11 @@ export const WeeklyScheduleCard: React.FC = () => {
       dayLabel: 'DAY 1',
       type: 'workout',
       routineId: 'routine-upper-body',
-      title: 'Upper Body Power',
+      title: 'Upper Body',
       focus: 'Chest, Back & Shoulders',
       exerciseCount: 6,
       estimatedMinutes: 50,
-      tags: ['Chest', 'Back', 'Delts'],
+      tags: ['Chest', 'Back'],
       exercisePreview: ['Incline DB Press', 'Lat Pulldown', 'Incline Fly', 'Chest Supported Row'],
     },
     {
@@ -69,19 +69,19 @@ export const WeeklyScheduleCard: React.FC = () => {
       type: 'workout',
       routineId: 'routine-lower-body-1',
       title: 'Lower Body 1',
-      focus: 'Quad & Leg Growth',
+      focus: 'Quad-Focused',
       exerciseCount: 5,
       estimatedMinutes: 45,
-      tags: ['Quads', 'Hamstrings', 'Calves'],
+      tags: ['Quads', 'Calves'],
       exercisePreview: ['Barbell Squat', 'Romanian Deadlift', 'Seated Leg Ext', 'Walking Lunges'],
     },
     {
       dayNum: 3,
       dayLabel: 'DAY 3',
       type: 'rest',
-      title: 'REST & RECOVERY',
-      focus: 'Active Mobility & Fiber Repair',
-      tags: ['Active Recovery'],
+      title: 'REST DAY',
+      focus: 'Active Recovery & Mobility',
+      tags: ['Recovery'],
       exercisePreview: ['Light Walking', 'Foam Rolling', 'Mobility Drills'],
     },
     {
@@ -89,11 +89,11 @@ export const WeeklyScheduleCard: React.FC = () => {
       dayLabel: 'DAY 4',
       type: 'workout',
       routineId: 'routine-push',
-      title: 'Push Hypertrophy',
+      title: 'Push Workout',
       focus: 'Chest, Delts & Triceps',
       exerciseCount: 6,
       estimatedMinutes: 50,
-      tags: ['Chest', 'Delts', 'Triceps'],
+      tags: ['Chest', 'Delts'],
       exercisePreview: ['Overhead Press', 'Incline Press', 'Cable Flyes', 'Lateral Raises'],
     },
     {
@@ -101,11 +101,11 @@ export const WeeklyScheduleCard: React.FC = () => {
       dayLabel: 'DAY 5',
       type: 'workout',
       routineId: 'routine-pull',
-      title: 'Pull Hypertrophy',
+      title: 'Pull Workout',
       focus: 'Lat Back & Biceps',
       exerciseCount: 6,
       estimatedMinutes: 50,
-      tags: ['Back', 'Rear Delts', 'Biceps'],
+      tags: ['Back', 'Biceps'],
       exercisePreview: ['Deadlift', 'Lat Pulldown', 'DB Rows', 'Incline Curls'],
     },
     {
@@ -114,10 +114,10 @@ export const WeeklyScheduleCard: React.FC = () => {
       type: 'workout',
       routineId: 'routine-lower-body-2',
       title: 'Lower Body 2',
-      focus: 'Glutes & Posterior Chain',
+      focus: 'Glutes & Hamstrings',
       exerciseCount: 5,
       estimatedMinutes: 45,
-      tags: ['Glutes', 'Hamstrings', 'Quads'],
+      tags: ['Glutes', 'Hamstrings'],
       exercisePreview: ['Barbell Squat', 'Hip Thrust', 'Split Squat', 'Leg Curls'],
     },
     {
@@ -125,9 +125,9 @@ export const WeeklyScheduleCard: React.FC = () => {
       dayLabel: 'DAY 7',
       type: 'rest',
       title: 'REST DAY',
-      focus: 'Full CNS Reset & Recovery',
+      focus: 'Full CNS Reset',
       tags: ['CNS Reset'],
-      exercisePreview: ['Sleep & Fiber Supercompensation'],
+      exercisePreview: ['Sleep & Supercompensation'],
     },
   ];
 
@@ -149,47 +149,40 @@ export const WeeklyScheduleCard: React.FC = () => {
   }
 
   return (
-    <div className="w-full rounded-3xl glass-panel p-5 sm:p-7 border-2 border-amber-400/40 shadow-2xl shadow-amber-400/10 space-y-5 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950/40">
-      {/* Prominent Card Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-0.5 border-b border-slate-800 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-400/20 border border-amber-400/50 text-amber-400 shadow-md shrink-0">
-            <Calendar className="h-6 w-6 stroke-[2.5]" />
-          </div>
-          <div>
-            <h2 className="text-lg sm:text-2xl font-black uppercase text-slate-100 font-condensed tracking-wide apple-display-title">
-              7-DAY WORKOUT CYCLE
-            </h2>
-            <p className="text-xs sm:text-sm text-amber-400 font-bold">5 Hypertrophy Workouts • 2 Rest Days</p>
-          </div>
+    <div className="w-full rounded-3xl glass-panel p-3 sm:p-4 border border-blue-900/60 shadow-2xl space-y-2.5 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950/30">
+      {/* Header Bar */}
+      <div className="flex items-center justify-between gap-2 px-1 pb-1">
+        <div className="flex items-center gap-2 min-w-0">
+          <Calendar className="h-4 w-4 text-amber-400 shrink-0" />
+          <h2 className="text-xs sm:text-sm font-black uppercase text-slate-100 font-condensed tracking-wide truncate apple-display-title">
+            7-DAY WORKOUT SCHEDULE
+          </h2>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+        <div className="flex items-center gap-1.5 shrink-0">
           {workoutLogs.length > 0 && (
             <button
               onClick={handleResetLogs}
-              className="flex items-center gap-1.5 text-xs font-black text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 px-3.5 py-2 rounded-xl border border-rose-500/40 uppercase tracking-wider font-condensed transition apple-press shadow-sm min-h-[40px]"
-              title="Reset All Logged Workouts"
+              className="flex items-center gap-1 text-[9px] font-black text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30 uppercase tracking-wider font-condensed transition apple-press"
+              title="Reset Cycle Progress"
             >
-              <RotateCcw className="h-4 w-4 text-rose-400" />
-              <span>Reset Cycle</span>
+              <RotateCcw className="h-3 w-3" />
+              <span>Reset</span>
             </button>
           )}
 
-          <span className="text-xs sm:text-sm font-black text-slate-950 bg-amber-400 px-4 py-2 rounded-xl border border-amber-300 uppercase tracking-wider font-condensed shadow-md">
-            Day {activeDay.dayNum} Active
+          <span className="text-[10px] font-black text-slate-950 bg-amber-400 px-2.5 py-0.5 rounded-lg font-mono">
+            DAY {activeDay.dayNum} ACTIVE
           </span>
         </div>
       </div>
 
       {/* Missed Day Alert */}
       {isMissed && (
-        <div className="p-4 rounded-2xl bg-rose-500/20 border border-rose-500/50 text-rose-100 flex items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-3 min-w-0">
-            <AlertCircle className="h-5 w-5 text-rose-400 shrink-0" />
-            <span className="text-xs sm:text-sm font-bold truncate">
-              {daysSinceLastWorkout} days since last session! Next: <strong className="underline text-amber-300">{activeDay.title}</strong>.
-            </span>
+        <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 flex items-center justify-between gap-2 text-xs font-bold">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <AlertCircle className="h-3.5 w-3.5 text-rose-400 shrink-0" />
+            <span className="truncate">{daysSinceLastWorkout}d idle! Next: {activeDay.title}.</span>
           </div>
           {activeDay.type === 'workout' && (
             <button
@@ -197,7 +190,7 @@ export const WeeklyScheduleCard: React.FC = () => {
                 triggerHaptic('medium');
                 navigate(`/workout/${activeDay.routineId || 'custom-session'}`);
               }}
-              className="rounded-xl bg-rose-500 text-slate-950 px-4 py-2 text-xs font-black uppercase font-condensed tracking-wider shrink-0 apple-press shadow-md"
+              className="rounded-lg bg-rose-500 text-slate-950 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider shrink-0 apple-press"
             >
               Resume
             </button>
@@ -205,8 +198,8 @@ export const WeeklyScheduleCard: React.FC = () => {
         </div>
       )}
 
-      {/* Enlarged Full-Screen 7-Day Workout Cards Grid */}
-      <div className="space-y-3 pt-1">
+      {/* Ultra-Compact 7-Day Rows - All 7 Days Fit on One Screen */}
+      <div className="space-y-1">
         {cycleDays.map((item, idx) => {
           const isActive = item.dayNum === activeDay.dayNum;
           const isPast = idx < currentCycleIndex;
@@ -215,17 +208,17 @@ export const WeeklyScheduleCard: React.FC = () => {
           return (
             <div
               key={item.dayLabel}
-              className={`rounded-3xl transition-all border-2 apple-press shadow-md ${
+              className={`rounded-xl transition-all border apple-press ${
                 isActive
-                  ? 'bg-slate-900/95 border-amber-400 shadow-amber-400/20 ring-1 ring-amber-400/40'
+                  ? 'bg-slate-900 border-amber-400/90 shadow-sm shadow-amber-400/20'
                   : isPast
-                  ? 'bg-slate-950/90 border-slate-800/90'
+                  ? 'bg-slate-950/80 border-slate-800/80'
                   : item.type === 'rest'
-                  ? 'bg-slate-950/60 border-slate-900'
-                  : 'bg-slate-900/80 border-slate-800/80'
+                  ? 'bg-slate-950/40 border-slate-900/60'
+                  : 'bg-slate-950/60 border-slate-800/60'
               }`}
             >
-              {/* Day Header Bar */}
+              {/* Single Compact Row */}
               <div
                 onClick={() => {
                   triggerHaptic('light');
@@ -233,39 +226,32 @@ export const WeeklyScheduleCard: React.FC = () => {
                     navigate(`/workout/${item.routineId || 'custom-session'}`);
                   }
                 }}
-                className="flex items-center justify-between gap-3 p-4 sm:p-5 cursor-pointer select-none"
+                className="flex items-center justify-between gap-1.5 px-2.5 py-2 cursor-pointer select-none"
               >
-                {/* Left: Larger Day Badge + Title */}
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <span className={`text-xs sm:text-sm font-black uppercase font-mono px-3 py-1 rounded-xl border-2 shrink-0 shadow-sm ${
+                {/* Left: Day Badge + Title + Tag */}
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <span className={`text-[9px] font-black uppercase font-mono px-1.5 py-0.5 rounded border shrink-0 ${
                     isActive
                       ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold'
                       : isPast
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                       : 'bg-slate-900 text-slate-400 border-slate-800'
                   }`}>
                     {item.dayLabel}
                   </span>
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="text-base sm:text-xl font-black text-slate-100 uppercase tracking-wide font-condensed apple-display-title">
-                        {item.title}
-                      </h4>
-                      {item.tags.map((tag) => (
-                        <span key={tag} className="text-[10px] sm:text-xs font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-lg border border-amber-400/30">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="text-xs sm:text-sm text-slate-400 font-semibold truncate pt-0.5">
-                      {item.focus}
-                    </p>
+                  <div className="min-w-0 flex-1 flex items-baseline gap-1.5">
+                    <h4 className="text-xs font-black text-slate-100 uppercase tracking-tight font-condensed truncate">
+                      {item.title}
+                    </h4>
+                    <span className="text-[9px] text-slate-400 font-semibold truncate hidden sm:inline">
+                      ({item.focus})
+                    </span>
                   </div>
                 </div>
 
-                {/* Right: Status Actions */}
-                <div className="flex items-center gap-2 shrink-0">
+                {/* Right: Actions */}
+                <div className="flex items-center gap-1.5 shrink-0">
                   {isActive && item.type === 'workout' ? (
                     <button
                       onClick={(e) => {
@@ -273,16 +259,14 @@ export const WeeklyScheduleCard: React.FC = () => {
                         triggerHaptic('medium');
                         navigate(`/workout/${item.routineId || 'custom-session'}`);
                       }}
-                      className="flex items-center gap-1.5 rounded-xl bg-amber-400 text-slate-950 px-4 py-2 text-xs sm:text-sm font-black uppercase font-condensed shadow-lg apple-press hover:bg-amber-300"
+                      className="flex items-center gap-1 rounded-md bg-amber-400 text-slate-950 px-2 py-0.5 text-[10px] font-black uppercase font-condensed shadow-sm apple-press"
                     >
-                      <Play className="h-4 w-4 fill-current" />
+                      <Play className="h-2.5 w-2.5 fill-current" />
                       <span>START</span>
                     </button>
                   ) : isPast ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs sm:text-sm font-black text-emerald-400 font-mono flex items-center gap-1">
-                        <CheckCircle2 className="h-4 w-4 stroke-[2.5]" /> DONE
-                      </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[9px] font-bold text-emerald-400 font-mono">✓ DONE</span>
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
@@ -295,51 +279,38 @@ export const WeeklyScheduleCard: React.FC = () => {
                             }
                           }
                         }}
-                        className="flex items-center gap-1 text-xs font-black text-rose-300 bg-rose-500/20 border border-rose-500/40 px-2.5 py-1.5 rounded-xl uppercase font-condensed apple-press shadow-sm"
+                        className="flex items-center gap-0.5 text-[8px] font-black text-rose-300 bg-rose-500/20 border border-rose-500/30 px-1 py-0.5 rounded uppercase font-condensed apple-press"
                         title="Reset Day Status"
                       >
-                        <RotateCcw className="h-3.5 w-3.5 text-rose-400" />
+                        <RotateCcw className="h-2 w-2 text-rose-400" />
                         <span>Reset</span>
                       </button>
                     </div>
                   ) : item.type === 'rest' ? (
-                    <span className="text-xs sm:text-sm font-black text-slate-400 font-mono flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-                      <Moon className="h-4 w-4 text-amber-400" /> REST
+                    <span className="text-[9px] font-bold text-slate-400 font-mono flex items-center gap-0.5">
+                      <Moon className="h-2.5 w-2.5 text-amber-400" /> REST
                     </span>
                   ) : (
-                    <span className="text-xs sm:text-sm font-black text-slate-500 font-mono px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">READY</span>
+                    <span className="text-[9px] font-bold text-slate-500 font-mono">READY</span>
                   )}
 
-                  {/* Expand Chevron Drawer Toggle */}
+                  {/* Drawer Toggle */}
                   <button
                     onClick={(e) => toggleDayExpansion(idx, e)}
-                    className="p-2 rounded-xl text-slate-400 hover:text-slate-100 apple-press bg-slate-900 border border-slate-800"
-                    title={isExpanded ? 'Collapse Details' : 'Expand Exercise Preview'}
+                    className="p-1 rounded text-slate-400 hover:text-slate-100 apple-press"
+                    title={isExpanded ? 'Collapse Details' : 'Expand Movements'}
                   >
-                    <Layers className={`h-4 w-4 ${isExpanded ? 'text-amber-400' : 'text-slate-400'}`} />
+                    <Layers className={`h-3 w-3 ${isExpanded ? 'text-amber-400' : 'text-slate-500'}`} />
                   </button>
                 </div>
               </div>
 
-              {/* Expandable Exercise Drawer Details */}
+              {/* Drawer preview details */}
               {isExpanded && (
-                <div className="px-4 sm:px-5 pb-5 pt-2 border-t border-slate-800 space-y-3 animate-fade-in text-left">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-black uppercase text-amber-400 font-condensed flex items-center gap-1.5">
-                      <Dumbbell className="h-4 w-4" />
-                      {item.type === 'workout' ? `${item.exerciseCount} Key Movements` : 'Recovery Plan'}
-                    </span>
-                    {item.estimatedMinutes && (
-                      <span className="font-mono text-cyan-400 font-bold flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" /> ~{item.estimatedMinutes}m duration
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="text-xs sm:text-sm text-slate-200 font-mono leading-relaxed bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800 shadow-inner">
+                <div className="px-2.5 pb-2.5 pt-1 border-t border-slate-800/80 space-y-1.5 text-left text-[11px]">
+                  <p className="text-slate-300 font-mono leading-tight bg-slate-900/90 p-2 rounded-lg border border-slate-800">
                     {item.exercisePreview.join(' • ')}
                   </p>
-
                   {item.type === 'workout' && (
                     <button
                       onClick={(e) => {
@@ -347,9 +318,9 @@ export const WeeklyScheduleCard: React.FC = () => {
                         triggerHaptic('medium');
                         navigate(`/workout/${item.routineId || 'custom-session'}`);
                       }}
-                      className="w-full text-center py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-amber-400 to-amber-500 text-slate-950 text-xs sm:text-sm font-black uppercase font-condensed tracking-wider shadow-xl flex items-center justify-center gap-2 apple-press hover:opacity-95"
+                      className="w-full text-center py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider font-condensed shadow apple-press"
                     >
-                      <Play className="h-4 w-4 fill-current" />
+                      <Play className="h-3 w-3 fill-current inline mr-1" />
                       <span>{isPast ? 'RE-LOG WORKOUT' : 'LAUNCH WORKOUT SESSION'}</span>
                     </button>
                   )}
@@ -362,6 +333,7 @@ export const WeeklyScheduleCard: React.FC = () => {
     </div>
   );
 };
+
 
 
 
