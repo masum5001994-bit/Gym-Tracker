@@ -41,14 +41,15 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5 pb-24 max-w-3xl mx-auto">
-      {/* Primary 7-Day Workout Progression Schedule */}
+    <div className="space-y-6 pb-24 max-w-4xl mx-auto w-full px-1">
+      {/* Full-Screen Prominent 7-Day Workout Progression Schedule */}
       <WeeklyScheduleCard />
 
       {/* 7-Day Muscle Volume Target Matrix with RESET Button */}
       <VolumeMatrixCard matrix={volumeMatrix} loading={loading} onResetVolume={handleResetVolume} />
     </div>
   );
+
 
 };
 
