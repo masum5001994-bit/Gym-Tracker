@@ -277,7 +277,18 @@ export const LiveWorkout: React.FC = () => {
     val: number
   ) => {
     const updated = [...exerciseLogs];
-    updated[exIndex].sets[setIndex][field] = Math.max(0, val);
+    const newVal = Math.max(0, val);
+    updated[exIndex].sets[setIndex][field] = newVal;
+
+    // Smart Auto-Sync: If modifying Set 1 (setIndex === 0), auto-sync to all subsequent UNCOMPLETED sets!
+    if (setIndex === 0) {
+      for (let i = 1; i < updated[exIndex].sets.length; i++) {
+        if (!updated[exIndex].sets[i].completed) {
+          updated[exIndex].sets[i][field] = newVal;
+        }
+      }
+    }
+
     setExerciseLogs(updated);
   };
 
@@ -285,7 +296,18 @@ export const LiveWorkout: React.FC = () => {
     triggerHaptic('light');
     const updated = [...exerciseLogs];
     const current = updated[exIndex].sets[setIndex].weightKg;
-    updated[exIndex].sets[setIndex].weightKg = Math.max(0, Math.round((current + deltaKg) * 10) / 10);
+    const nextWeight = Math.max(0, Math.round((current + deltaKg) * 10) / 10);
+    updated[exIndex].sets[setIndex].weightKg = nextWeight;
+
+    // Smart Auto-Sync: If modifying Set 1 (setIndex === 0), auto-sync to all subsequent UNCOMPLETED sets!
+    if (setIndex === 0) {
+      for (let i = 1; i < updated[exIndex].sets.length; i++) {
+        if (!updated[exIndex].sets[i].completed) {
+          updated[exIndex].sets[i].weightKg = nextWeight;
+        }
+      }
+    }
+
     setExerciseLogs(updated);
   };
 
@@ -293,9 +315,21 @@ export const LiveWorkout: React.FC = () => {
     triggerHaptic('light');
     const updated = [...exerciseLogs];
     const current = updated[exIndex].sets[setIndex].reps;
-    updated[exIndex].sets[setIndex].reps = Math.max(1, current + deltaReps);
+    const nextReps = Math.max(1, current + deltaReps);
+    updated[exIndex].sets[setIndex].reps = nextReps;
+
+    // Smart Auto-Sync: If modifying Set 1 (setIndex === 0), auto-sync reps to subsequent UNCOMPLETED sets!
+    if (setIndex === 0) {
+      for (let i = 1; i < updated[exIndex].sets.length; i++) {
+        if (!updated[exIndex].sets[i].completed) {
+          updated[exIndex].sets[i].reps = nextReps;
+        }
+      }
+    }
+
     setExerciseLogs(updated);
   };
+
 
   const handleUpdateEffort = (exIndex: number, setIndex: number, effort: string) => {
     triggerHaptic('light');
@@ -545,7 +579,7 @@ export const LiveWorkout: React.FC = () => {
                         {completedSetsCount}/{exLog.sets.length} SETS
                       </span>
                       <span className="inline-flex items-center gap-1 rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-mono font-black shadow-sm">
-                        🏋️ LAST LOAD: {maxPrevWeight > 0 ? `${maxPrevWeight} KG` : `${exLog.sets[0]?.weightKg || 40} KG`}
+                        🏋️ LAST LOAD: {maxPrevWeight > 0 ? `${maxPrevWeight} KG` : `--`}
                       </span>
 
                     </div>
@@ -555,7 +589,7 @@ export const LiveWorkout: React.FC = () => {
                         e.stopPropagation();
                         toggleCollapse(exIdx);
                       }}
-                      className="flex items-center gap-1 px-2 py-1 rounded-xl bg-slate-900 text-amber-400 border border-slate-800 shrink-0 touch-manipulation min-h-[36px]"
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900 text-amber-400 border border-slate-800 shrink-0 touch-manipulation min-h-[36px] apple-press"
                     >
                       <span className="text-[10px] font-black uppercase font-condensed">
                         {isCollapsed ? 'TAP TO LOG' : 'CLOSE'}
@@ -564,11 +598,12 @@ export const LiveWorkout: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Exercise Title */}
-                  <h3 className="text-base sm:text-lg font-black text-slate-100 font-condensed tracking-wide uppercase leading-tight pt-0.5">
+                  {/* Exercise Title - BIGGER & VERY NOTICEABLE */}
+                  <h3 className="text-lg sm:text-xl font-black text-amber-400 font-condensed tracking-wide uppercase leading-tight pt-1">
                     {exLog.exerciseName}
                   </h3>
                 </div>
+
 
                 {/* Expanded Exercise Body */}
                 {!isCollapsed && (
