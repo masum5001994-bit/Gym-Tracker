@@ -1,29 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Moon, Play, AlertCircle, RotateCcw, Layers, CheckCircle2 } from 'lucide-react';
+import { Calendar, Moon, Play, AlertCircle, RotateCcw, Layers, Edit3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { WorkoutLog } from '../types';
 import { useAuthContext } from '../context/AuthContext';
 import { triggerHaptic } from '../utils/haptics';
-
-interface CycleDay {
-  dayNum: number;
-  dayLabel: string;
-  type: 'workout' | 'rest';
-  routineId?: string;
-  title: string;
-  focus: string;
-  exerciseCount?: number;
-  estimatedMinutes?: number;
-  tags: string[];
-  exercisePreview: string[];
-}
+import { getCustomCycleDays, CustomCycleDay } from '../utils/cycleCustomizer';
 
 export const WeeklyScheduleCard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([]);
   const [expandedDayIndex, setExpandedDayIndex] = useState<number | null>(null);
+  const [cycleDays, setCycleDays] = useState<CustomCycleDay[]>(getCustomCycleDays());
 
   const fetchLogs = () => {
     api
@@ -34,6 +23,13 @@ export const WeeklyScheduleCard: React.FC = () => {
 
   useEffect(() => {
     fetchLogs();
+
+    const handleUpdate = () => {
+      setCycleDays(getCustomCycleDays());
+    };
+
+    window.addEventListener('cycle_days_updated', handleUpdate);
+    return () => window.removeEventListener('cycle_days_updated', handleUpdate);
   }, [user]);
 
   const handleResetLogs = async () => {
@@ -50,86 +46,6 @@ export const WeeklyScheduleCard: React.FC = () => {
     setExpandedDayIndex((prev) => (prev === idx ? null : idx));
   };
 
-  const cycleDays: CycleDay[] = [
-    {
-      dayNum: 1,
-      dayLabel: 'DAY 1',
-      type: 'workout',
-      routineId: 'routine-upper-body',
-      title: 'Upper Body',
-      focus: 'Chest, Back & Shoulders',
-      exerciseCount: 6,
-      estimatedMinutes: 50,
-      tags: ['Chest', 'Back'],
-      exercisePreview: ['Incline DB Press', 'Lat Pulldown', 'Incline Fly', 'Chest Supported Row'],
-    },
-    {
-      dayNum: 2,
-      dayLabel: 'DAY 2',
-      type: 'workout',
-      routineId: 'routine-lower-body-1',
-      title: 'Lower Body 1',
-      focus: 'Quad-Focused',
-      exerciseCount: 5,
-      estimatedMinutes: 45,
-      tags: ['Quads', 'Calves'],
-      exercisePreview: ['Barbell Squat', 'Romanian Deadlift', 'Seated Leg Ext', 'Walking Lunges'],
-    },
-    {
-      dayNum: 3,
-      dayLabel: 'DAY 3',
-      type: 'rest',
-      title: 'REST DAY',
-      focus: 'Active Recovery & Mobility',
-      tags: ['Recovery'],
-      exercisePreview: ['Light Walking', 'Foam Rolling', 'Mobility Drills'],
-    },
-    {
-      dayNum: 4,
-      dayLabel: 'DAY 4',
-      type: 'workout',
-      routineId: 'routine-push',
-      title: 'Push Workout',
-      focus: 'Chest, Delts & Triceps',
-      exerciseCount: 6,
-      estimatedMinutes: 50,
-      tags: ['Chest', 'Delts'],
-      exercisePreview: ['Overhead Press', 'Incline Press', 'Cable Flyes', 'Lateral Raises'],
-    },
-    {
-      dayNum: 5,
-      dayLabel: 'DAY 5',
-      type: 'workout',
-      routineId: 'routine-pull',
-      title: 'Pull Workout',
-      focus: 'Lat Back & Biceps',
-      exerciseCount: 6,
-      estimatedMinutes: 50,
-      tags: ['Back', 'Biceps'],
-      exercisePreview: ['Deadlift', 'Lat Pulldown', 'DB Rows', 'Incline Curls'],
-    },
-    {
-      dayNum: 6,
-      dayLabel: 'DAY 6',
-      type: 'workout',
-      routineId: 'routine-lower-body-2',
-      title: 'Lower Body 2',
-      focus: 'Glutes & Hamstrings',
-      exerciseCount: 5,
-      estimatedMinutes: 45,
-      tags: ['Glutes', 'Hamstrings'],
-      exercisePreview: ['Barbell Squat', 'Hip Thrust', 'Split Squat', 'Leg Curls'],
-    },
-    {
-      dayNum: 7,
-      dayLabel: 'DAY 7',
-      type: 'rest',
-      title: 'REST DAY',
-      focus: 'Full CNS Reset',
-      tags: ['CNS Reset'],
-      exercisePreview: ['Sleep & Supercompensation'],
-    },
-  ];
 
   const completedCount = workoutLogs.length;
   const currentCycleIndex = completedCount % 7;
@@ -160,6 +76,18 @@ export const WeeklyScheduleCard: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={() => {
+              triggerHaptic('light');
+              navigate('/profile');
+            }}
+            className="flex items-center gap-1 text-[9px] font-black text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 px-2 py-0.5 rounded-lg border border-amber-400/30 uppercase tracking-wider font-condensed transition apple-press"
+            title="Rename Days & Custom Exercises"
+          >
+            <Edit3 className="h-3 w-3" />
+            <span>Customize</span>
+          </button>
+
           {workoutLogs.length > 0 && (
             <button
               onClick={handleResetLogs}
@@ -175,6 +103,7 @@ export const WeeklyScheduleCard: React.FC = () => {
             DAY {activeDay.dayNum} ACTIVE
           </span>
         </div>
+
       </div>
 
       {/* Missed Day Alert */}

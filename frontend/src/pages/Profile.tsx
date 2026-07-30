@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { User, Scale, Target, Flame, Edit3, Save, X, Activity, LogOut, LogIn, Award, HeartPulse, Zap } from 'lucide-react';
+import { User, Scale, Target, Flame, Edit3, Save, X, Activity, LogOut, LogIn, Dumbbell, Calendar, RotateCcw, Plus, Trash2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { UserProfile } from '../types';
 import { api } from '../services/api';
 import { useAuthContext } from '../context/AuthContext';
 import { AuthModal } from '../components/AuthModal';
 import { triggerHaptic } from '../utils/haptics';
+import { getCustomCycleDays, saveCustomCycleDays, resetCustomCycleDaysToDefault, CustomCycleDay } from '../utils/cycleCustomizer';
 
 export const Profile: React.FC = () => {
   const { user, logout } = useAuthContext();
@@ -13,6 +14,14 @@ export const Profile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  // Cycle Customizer State
+  const [cycleDays, setCycleDays] = useState<CustomCycleDay[]>(getCustomCycleDays());
+  const [editingDay, setEditingDay] = useState<CustomCycleDay | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editFocus, setEditFocus] = useState('');
+  const [editExercises, setEditExercises] = useState<string[]>([]);
+
 
   // Form State
   const [name, setName] = useState('');
@@ -121,6 +130,53 @@ export const Profile: React.FC = () => {
   const weightDiff = profile ? profile.currentWeightKg - profile.targetWeightKg : 0;
   const isLossGoal = weightDiff > 0;
 
+  const handleOpenDayEditor = (day: CustomCycleDay) => {
+    setEditingDay(day);
+    setEditTitle(day.title);
+    setEditFocus(day.focus);
+    setEditExercises([...day.exercisePreview]);
+    triggerHaptic('light');
+  };
+
+  const handleSaveDayEdits = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingDay) return;
+
+    triggerHaptic('success');
+    const updatedDays = cycleDays.map((d) => {
+      if (d.dayNum === editingDay.dayNum) {
+        const cleanedExercises = editExercises.filter((ex) => ex.trim().length > 0);
+        return {
+          ...d,
+          title: editTitle.trim() || d.title,
+          focus: editFocus.trim() || d.focus,
+          exercisePreview: cleanedExercises,
+          exerciseCount: cleanedExercises.length,
+        };
+      }
+      return d;
+    });
+
+    saveCustomCycleDays(updatedDays);
+    setCycleDays(updatedDays);
+    setEditingDay(null);
+
+    confetti({
+      particleCount: 80,
+      spread: 50,
+      origin: { y: 0.7 },
+      colors: ['#FF9F0A', '#0A84FF', '#30D158'],
+    });
+  };
+
+  const handleResetDays = () => {
+    if (window.confirm('Reset all Day Titles and Exercise Names back to standard default Science routines?')) {
+      triggerHaptic('warning');
+      const defaults = resetCustomCycleDaysToDefault();
+      setCycleDays(defaults);
+    }
+  };
+
   if (loading) {
     return (
       <div className="py-16 text-center space-y-3">
@@ -217,6 +273,185 @@ export const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* NEW: 7-DAY WORKOUT CYCLE & EXERCISE CUSTOMIZER SETTINGS CARD */}
+      <div className="rounded-3xl glass-panel p-5 border border-amber-400/40 shadow-xl space-y-4 bg-slate-900/90">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/20 text-amber-400 border border-amber-400/30">
+              <Calendar className="h-5 w-5 stroke-[2.5]" />
+            </div>
+            <div>
+              <h2 className="text-sm font-black uppercase tracking-wider text-slate-100 font-condensed apple-display-title">
+                DAY EXERCISE & ROUTINE CUSTOMIZER
+              </h2>
+              <p className="text-[10px] text-amber-400 font-semibold">Customize day titles & exercise movements</p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleResetDays}
+            className="flex items-center gap-1 text-[10px] font-black text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1 rounded-xl border border-rose-500/30 uppercase tracking-wider font-condensed apple-press"
+            title="Reset to default routine names"
+          >
+            <RotateCcw className="h-3 w-3 text-rose-400" />
+            <span>Reset Names</span>
+          </button>
+        </div>
+
+        {/* 7 Days List in Settings */}
+        <div className="space-y-2">
+          {cycleDays.map((day) => (
+            <div
+              key={day.dayNum}
+              className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-slate-950/90 border border-slate-800/90 hover:border-amber-400/50 transition shadow-sm"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <span className="text-[10px] font-black uppercase font-mono px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 shrink-0">
+                  {day.dayLabel}
+                </span>
+                <div className="min-w-0">
+                  <h4 className="text-xs font-black text-slate-100 uppercase tracking-wide font-condensed truncate">
+                    {day.title}
+                  </h4>
+                  <p className="text-[10px] text-slate-400 font-mono truncate">
+                    {day.exercisePreview.join(' • ')}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleOpenDayEditor(day)}
+                className="flex items-center gap-1 text-xs font-black text-slate-950 bg-amber-400 hover:bg-amber-300 px-3 py-1.5 rounded-xl uppercase tracking-wider font-condensed apple-press shrink-0 shadow-sm"
+              >
+                <Edit3 className="h-3.5 w-3.5" />
+                <span>Rename / Edit</span>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* DAY & EXERCISE RENAME EDIT MODAL */}
+      {editingDay && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 apple-glass-chrome p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl glass-panel p-6 border border-amber-400/60 shadow-2xl space-y-4 apple-spring my-auto max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Dumbbell className="h-5 w-5 text-amber-400 stroke-[2.5]" />
+                <h3 className="text-sm sm:text-base font-black uppercase text-slate-100 font-condensed apple-display-title">
+                  RENAME {editingDay.dayLabel} ({editingDay.title})
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  triggerHaptic('light');
+                  setEditingDay(null);
+                }}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-100 apple-press"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveDayEdits} className="space-y-4">
+              <div>
+                <label className="text-[10px] font-black uppercase text-amber-400 block mb-1">
+                  Day Title / Routine Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="e.g. Upper Body & Arms"
+                  className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2.5 text-xs text-slate-100 font-bold focus:border-amber-400 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">
+                  Focus Description
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFocus}
+                  onChange={(e) => setEditFocus(e.target.value)}
+                  placeholder="e.g. Chest, Back & Shoulders"
+                  className="w-full rounded-xl bg-slate-950 border border-slate-800 px-3.5 py-2 text-xs text-slate-100 font-medium focus:border-amber-400 focus:outline-none"
+                />
+              </div>
+
+              {/* Exercises List Renamer */}
+              <div className="space-y-2 border-t border-slate-800 pt-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black uppercase text-amber-400 font-condensed">
+                    Movements & Exercise Names ({editExercises.length})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setEditExercises([...editExercises, 'New Exercise'])}
+                    className="flex items-center gap-1 text-[10px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-lg uppercase font-condensed apple-press"
+                  >
+                    <Plus className="h-3 w-3" />
+                    <span>Add Exercise</span>
+                  </button>
+                </div>
+
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                  {editExercises.map((exName, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono font-bold text-slate-500 w-5 shrink-0">
+                        #{idx + 1}
+                      </span>
+                      <input
+                        type="text"
+                        required
+                        value={exName}
+                        onChange={(e) => {
+                          const updated = [...editExercises];
+                          updated[idx] = e.target.value;
+                          setEditExercises(updated);
+                        }}
+                        className="flex-1 rounded-xl bg-slate-950 border border-slate-800 px-3 py-2 text-xs text-slate-100 font-bold focus:border-amber-400 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = editExercises.filter((_, i) => i !== idx);
+                          setEditExercises(updated);
+                        }}
+                        className="p-2 rounded-xl text-rose-400 hover:bg-rose-500/20 apple-press shrink-0"
+                        title="Remove Exercise"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingDay(null)}
+                  className="rounded-xl bg-slate-900 border border-slate-800 px-4 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800 apple-press"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 rounded-xl bg-amber-400 px-5 py-2 text-xs font-black text-slate-950 hover:bg-amber-300 apple-press shadow-md uppercase tracking-wider font-condensed"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                  <span>Save Day Renames</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* iOS Health Style Progress Gauge Card */}
       <div className="rounded-3xl glass-panel p-5 shadow-xl border border-blue-900/60 space-y-3">
@@ -477,4 +712,5 @@ export const Profile: React.FC = () => {
     </div>
   );
 };
+
 
