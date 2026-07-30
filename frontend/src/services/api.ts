@@ -577,7 +577,26 @@ const FALLBACK_ROUTINES: Routine[] = [
   },
 ];
 
+function deduplicateWorkouts(logs: WorkoutLog[]): WorkoutLog[] {
+  const seenKeys = new Set<string>();
+  const clean: WorkoutLog[] = [];
+
+  logs.forEach((log) => {
+    if (!log || (log as any).deleted) return;
+    const dateKey = log.date ? new Date(log.date).toISOString().substring(0, 10) : '';
+    const uniqueKey = log.id || `${dateKey}-${log.routineTitle}`;
+
+    if (!seenKeys.has(uniqueKey)) {
+      seenKeys.add(uniqueKey);
+      clean.push(log);
+    }
+  });
+
+  return clean.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
 function getStoredWorkouts(): WorkoutLog[] {
+
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_WORKOUTS_KEY);
     return raw ? JSON.parse(raw) : [];
@@ -744,14 +763,17 @@ export const api = {
       if (!snap.empty) {
         const remoteLogs: WorkoutLog[] = [];
         snap.forEach((docSnap) => {
-          remoteLogs.push(docSnap.data() as WorkoutLog);
+          const data = docSnap.data();
+          if (data && !data.deleted) {
+            remoteLogs.push(data as WorkoutLog);
+          }
         });
 
-        const sortedLogs = remoteLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        const deduplicated = deduplicateWorkouts(remoteLogs);
         // Cache copy for offline resilience
-        localStorage.setItem(KEY, JSON.stringify(sortedLogs));
-        saveStoredWorkouts(sortedLogs);
-        return sortedLogs;
+        localStorage.setItem(KEY, JSON.stringify(deduplicated));
+        saveStoredWorkouts(deduplicated);
+        return deduplicated;
       }
     } catch (e) {
       console.warn('Central database workout fetch note:', e);
@@ -760,11 +782,12 @@ export const api = {
     // 2. Secondary fallback if offline: read local cache
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) return deduplicateWorkouts(JSON.parse(raw));
     } catch (e) {}
 
-    return getStoredWorkouts();
+    return deduplicateWorkouts(getStoredWorkouts());
   },
+
 
   logWorkout: async (workout: Omit<WorkoutLog, 'id'>, userId?: string): Promise<WorkoutLog> => {
     const uid = api.getCentralUserId(userId);

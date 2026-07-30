@@ -151,50 +151,51 @@ export const WeeklyScheduleCard: React.FC = () => {
                   : 'bg-slate-900/80 border-slate-800/80 hover:border-amber-400/50'
               }`}
             >
-              {/* Day Card Header */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1.5">
-                <div className="flex items-center gap-2 min-w-0">
+              {/* Day Card Header - HERO DAY & HERO TITLE */}
+              <div className="flex flex-col gap-1.5 border-b border-slate-800/80 pb-2">
+                <div className="flex items-center justify-between gap-2">
+                  {/* HERO DAY BADGE */}
                   <span
-                    className={`text-[10px] sm:text-xs font-black uppercase font-mono px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border shrink-0 shadow-sm ${
+                    className={`text-xs sm:text-sm font-black uppercase font-mono px-3 py-1 rounded-xl border-2 shrink-0 shadow-md ${
                       isActive
-                        ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold'
+                        ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold ring-2 ring-amber-400/40'
                         : isPast
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                        ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/50'
                         : 'bg-slate-900 text-slate-400 border-slate-800'
                     }`}
                   >
                     {item.dayLabel}
                   </span>
 
-                  <div className="min-w-0">
-                    <h3 className="text-xs sm:text-base font-black text-slate-100 uppercase tracking-tight font-condensed truncate apple-display-title">
-                      {item.title}
-                    </h3>
-                  </div>
+                  {/* Status Pill */}
+                  {isActive && item.type === 'workout' ? (
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-950 bg-amber-400 px-2.5 py-1 rounded-lg shrink-0 shadow-md">
+                      ACTIVE NOW
+                    </span>
+                  ) : isPast ? (
+                    <span className="text-xs font-black text-emerald-400 font-mono flex items-center gap-1 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
+                      <CheckCircle2 className="h-3.5 w-3.5 stroke-[2.5]" /> DONE
+                    </span>
+                  ) : item.type === 'rest' ? (
+                    <span className="text-xs font-extrabold text-amber-400 font-mono flex items-center gap-1 shrink-0 bg-amber-400/10 px-2 py-0.5 rounded-lg border border-amber-400/20">
+                      <Moon className="h-3.5 w-3.5" /> REST
+                    </span>
+                  ) : (
+                    <span className="text-xs font-bold text-slate-500 font-mono shrink-0">READY</span>
+                  )}
                 </div>
 
-                {/* Status Pill */}
-                {isActive && item.type === 'workout' ? (
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-950 bg-amber-400 px-2 py-0.5 rounded shrink-0 shadow-sm self-start">
-                    ACTIVE
-                  </span>
-                ) : isPast ? (
-                  <span className="text-[10px] sm:text-xs font-black text-emerald-400 font-mono flex items-center gap-1 shrink-0 self-start">
-                    <CheckCircle2 className="h-3 w-3 stroke-[2.5]" /> DONE
-                  </span>
-                ) : item.type === 'rest' ? (
-                  <span className="text-[10px] sm:text-xs font-extrabold text-amber-400 font-mono flex items-center gap-1 shrink-0 self-start">
-                    <Moon className="h-3 w-3" /> REST
-                  </span>
-                ) : (
-                  <span className="text-[10px] sm:text-xs font-bold text-slate-500 font-mono shrink-0 self-start">READY</span>
-                )}
+                {/* HERO ROUTINE TITLE */}
+                <div className="min-w-0 pt-0.5">
+                  <h3 className="text-sm sm:text-lg font-black text-amber-400 uppercase tracking-wide font-condensed leading-tight apple-display-title">
+                    {item.title}
+                  </h3>
+                  <p className="text-[10px] sm:text-xs text-slate-300 font-bold truncate">
+                    {item.focus}
+                  </p>
+                </div>
               </div>
 
-              {/* Sub-focus */}
-              <p className="text-[10px] sm:text-xs text-slate-400 font-semibold truncate -mt-1">
-                {item.focus}
-              </p>
 
               {/* Exercises List inside Day Card */}
               <div className="space-y-1 bg-slate-950/80 p-2 sm:p-2.5 rounded-xl border border-slate-800/80">
