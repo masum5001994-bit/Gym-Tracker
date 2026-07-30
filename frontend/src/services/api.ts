@@ -720,54 +720,54 @@ export const api = {
     };
   },
 
-  // Workouts (Scoped to user ID with Cloud Firestore Cross-Device Sync)
-  getWorkouts: async (userId?: string): Promise<WorkoutLog[]> => {
-    const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
-    const KEY = `bws_gym_tracker_workouts_${uid}`;
-    let localLogs: WorkoutLog[] = [];
-
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) localLogs = JSON.parse(raw);
-      else localLogs = getStoredWorkouts();
-    } catch (e) {
-      localLogs = getStoredWorkouts();
+  // Central Database User ID Resolver
+  getCentralUserId: (userId?: string): string => {
+    if (userId) return userId;
+    if (auth.currentUser?.uid) return auth.currentUser.uid;
+    let deviceUid = localStorage.getItem('bws_central_user_id');
+    if (!deviceUid) {
+      deviceUid = `central-user-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      localStorage.setItem('bws_central_user_id', deviceUid);
     }
-
-    // Cloud Firestore Cross-Device Sync for Mobile & Desktop
-    try {
-      if (uid && uid !== 'main_user') {
-        const q = query(collection(db, 'users', uid, 'workouts'), orderBy('date', 'desc'));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const remoteLogs: WorkoutLog[] = [];
-          snap.forEach((docSnap) => {
-            remoteLogs.push(docSnap.data() as WorkoutLog);
-          });
-
-          // Merge local and remote logs without duplicates
-          const logMap: Record<string, WorkoutLog> = {};
-          [...localLogs, ...remoteLogs].forEach((log) => {
-            if (log.id) logMap[log.id] = log;
-          });
-          const mergedLogs = Object.values(logMap).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-          // Save merged logs to local storage
-          localStorage.setItem(KEY, JSON.stringify(mergedLogs));
-          saveStoredWorkouts(mergedLogs);
-          return mergedLogs;
-        }
-      }
-    } catch (e) {
-      console.warn('Firestore workouts sync note:', e);
-    }
-
-    return localLogs;
+    return deviceUid;
   },
 
+  // Central Database Workouts API (Direct Central Database Fetching & Saving)
+  getWorkouts: async (userId?: string): Promise<WorkoutLog[]> => {
+    const uid = api.getCentralUserId(userId);
+    const KEY = `bws_gym_tracker_workouts_${uid}`;
+
+    // 1. Primary: Fetch directly from Central Firebase Cloud Database
+    try {
+      const q = query(collection(db, 'users', uid, 'workouts'), orderBy('date', 'desc'));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const remoteLogs: WorkoutLog[] = [];
+        snap.forEach((docSnap) => {
+          remoteLogs.push(docSnap.data() as WorkoutLog);
+        });
+
+        const sortedLogs = remoteLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        // Cache copy for offline resilience
+        localStorage.setItem(KEY, JSON.stringify(sortedLogs));
+        saveStoredWorkouts(sortedLogs);
+        return sortedLogs;
+      }
+    } catch (e) {
+      console.warn('Central database workout fetch note:', e);
+    }
+
+    // 2. Secondary fallback if offline: read local cache
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+
+    return getStoredWorkouts();
+  },
 
   logWorkout: async (workout: Omit<WorkoutLog, 'id'>, userId?: string): Promise<WorkoutLog> => {
-    const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
+    const uid = api.getCentralUserId(userId);
     const KEY = `bws_gym_tracker_workouts_${uid}`;
 
     const newLog: WorkoutLog = {
@@ -775,6 +775,22 @@ export const api = {
       id: `wlog-${Date.now()}`,
     };
 
+    // 1. Direct Central Firebase Cloud Database write
+    try {
+      const docRef = doc(db, 'users', uid, 'workouts', newLog.id);
+      await setDoc(docRef, newLog);
+    } catch (e) {
+      console.error('Failed central database write:', e);
+    }
+
+    // 2. Also send to Express backend API if active
+    try {
+      await axios.post(`${API_BASE}/workouts`, newLog);
+    } catch (e) {
+      // Background note
+    }
+
+    // 3. Update local cache
     let existing: WorkoutLog[] = [];
     try {
       const raw = localStorage.getItem(KEY);
@@ -782,22 +798,9 @@ export const api = {
       else existing = getStoredWorkouts();
     } catch (e) {}
 
-    const updated = [newLog, ...existing];
-
-    try {
-      localStorage.setItem(KEY, JSON.stringify(updated));
-      saveStoredWorkouts(updated);
-    } catch (e) {}
-
-    // Firestore background sync
-    setTimeout(async () => {
-      try {
-        const docRef = doc(db, 'users', uid, 'workouts', newLog.id);
-        await setDoc(docRef, newLog);
-      } catch (e) {
-        console.warn('Firestore workout log sync note:', e);
-      }
-    }, 0);
+    const updated = [newLog, ...existing.filter((w) => w.id !== newLog.id)];
+    localStorage.setItem(KEY, JSON.stringify(updated));
+    saveStoredWorkouts(updated);
 
     return newLog;
   },
@@ -807,8 +810,15 @@ export const api = {
   },
 
   deleteWorkout: async (workoutId: string, userId?: string): Promise<void> => {
-    const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
+    const uid = api.getCentralUserId(userId);
     const KEY = `bws_gym_tracker_workouts_${uid}`;
+
+    // Delete from Central Firebase Database
+    try {
+      const docRef = doc(db, 'users', uid, 'workouts', workoutId);
+      await setDoc(docRef, { deleted: true }, { merge: true });
+    } catch (e) {}
+
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
@@ -819,6 +829,7 @@ export const api = {
       }
     } catch (e) {}
   },
+
 
   clearAllWorkouts: async (userId?: string): Promise<void> => {
     const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
