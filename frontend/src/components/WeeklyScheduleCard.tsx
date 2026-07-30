@@ -126,8 +126,8 @@ export const WeeklyScheduleCard: React.FC = () => {
         </div>
       )}
 
-      {/* CARDS VIEW FOR ALL DAYS (Day 1 through Day 7) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+      {/* CARDS VIEW FOR ALL DAYS (Day 1 through Day 7 - 2 COLUMNS LAYOUT) */}
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
         {cycleDays.map((item, idx) => {
           const isActive = item.dayNum === activeDay.dayNum;
           const isPast = idx < currentCycleIndex;
@@ -141,7 +141,7 @@ export const WeeklyScheduleCard: React.FC = () => {
                   navigate(`/workout/${item.routineId || 'custom-session'}`);
                 }
               }}
-              className={`rounded-3xl p-4 sm:p-5 border-2 transition-all cursor-pointer apple-press shadow-lg space-y-3 flex flex-col justify-between ${
+              className={`rounded-2xl sm:rounded-3xl p-3 sm:p-4 border-2 transition-all cursor-pointer apple-press shadow-lg space-y-2.5 flex flex-col justify-between ${
                 isActive
                   ? 'bg-slate-900/95 border-amber-400 shadow-amber-400/20 ring-2 ring-amber-400/30'
                   : isPast
@@ -152,10 +152,10 @@ export const WeeklyScheduleCard: React.FC = () => {
               }`}
             >
               {/* Day Card Header */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1.5">
+                <div className="flex items-center gap-2 min-w-0">
                   <span
-                    className={`text-xs font-black uppercase font-mono px-3 py-1 rounded-xl border-2 shrink-0 shadow-sm ${
+                    className={`text-[10px] sm:text-xs font-black uppercase font-mono px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl border shrink-0 shadow-sm ${
                       isActive
                         ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold'
                         : isPast
@@ -167,49 +167,51 @@ export const WeeklyScheduleCard: React.FC = () => {
                   </span>
 
                   <div className="min-w-0">
-                    <h3 className="text-base sm:text-lg font-black text-slate-100 uppercase tracking-wide font-condensed truncate apple-display-title">
+                    <h3 className="text-xs sm:text-base font-black text-slate-100 uppercase tracking-tight font-condensed truncate apple-display-title">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-slate-400 font-semibold truncate">
-                      {item.focus}
-                    </p>
                   </div>
                 </div>
 
                 {/* Status Pill */}
                 {isActive && item.type === 'workout' ? (
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-950 bg-amber-400 px-2.5 py-1 rounded-lg shrink-0 shadow-sm">
-                    ACTIVE NOW
+                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-950 bg-amber-400 px-2 py-0.5 rounded shrink-0 shadow-sm self-start">
+                    ACTIVE
                   </span>
                 ) : isPast ? (
-                  <span className="text-xs font-black text-emerald-400 font-mono flex items-center gap-1 shrink-0">
-                    <CheckCircle2 className="h-4 w-4 stroke-[2.5]" /> DONE
+                  <span className="text-[10px] sm:text-xs font-black text-emerald-400 font-mono flex items-center gap-1 shrink-0 self-start">
+                    <CheckCircle2 className="h-3 w-3 stroke-[2.5]" /> DONE
                   </span>
                 ) : item.type === 'rest' ? (
-                  <span className="text-xs font-extrabold text-amber-400 font-mono flex items-center gap-1 shrink-0">
-                    <Moon className="h-3.5 w-3.5" /> REST
+                  <span className="text-[10px] sm:text-xs font-extrabold text-amber-400 font-mono flex items-center gap-1 shrink-0 self-start">
+                    <Moon className="h-3 w-3" /> REST
                   </span>
                 ) : (
-                  <span className="text-xs font-bold text-slate-500 font-mono shrink-0">READY</span>
+                  <span className="text-[10px] sm:text-xs font-bold text-slate-500 font-mono shrink-0 self-start">READY</span>
                 )}
               </div>
 
+              {/* Sub-focus */}
+              <p className="text-[10px] sm:text-xs text-slate-400 font-semibold truncate -mt-1">
+                {item.focus}
+              </p>
+
               {/* Exercises List inside Day Card */}
-              <div className="space-y-1.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
-                <div className="flex items-center justify-between text-[10px] text-amber-400 font-black uppercase font-condensed">
-                  <span className="flex items-center gap-1">
-                    <Dumbbell className="h-3 w-3" />
+              <div className="space-y-1 bg-slate-950/80 p-2 sm:p-2.5 rounded-xl border border-slate-800/80">
+                <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-amber-400 font-black uppercase font-condensed">
+                  <span className="flex items-center gap-1 truncate">
+                    <Dumbbell className="h-3 w-3 shrink-0" />
                     {item.type === 'workout' ? `${item.exerciseCount || item.exercisePreview.length} Movements` : 'Recovery Plan'}
                   </span>
-                  {item.estimatedMinutes && <span>⏱ ~{item.estimatedMinutes}m</span>}
+                  {item.estimatedMinutes && <span className="shrink-0">⏱ ~{item.estimatedMinutes}m</span>}
                 </div>
-                <p className="text-xs text-slate-200 font-mono leading-relaxed truncate">
+                <p className="text-[10px] sm:text-xs text-slate-300 font-mono leading-tight line-clamp-2">
                   {item.exercisePreview.join(' • ')}
                 </p>
               </div>
 
               {/* Action Button inside Card */}
-              <div className="pt-1">
+              <div className="pt-0.5">
                 {item.type === 'workout' ? (
                   <button
                     onClick={(e) => {
@@ -217,19 +219,19 @@ export const WeeklyScheduleCard: React.FC = () => {
                       triggerHaptic('medium');
                       navigate(`/workout/${item.routineId || 'custom-session'}`);
                     }}
-                    className={`w-full py-2.5 rounded-2xl text-xs sm:text-sm font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-2 shadow-lg apple-press ${
+                    className={`w-full py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-1.5 shadow-lg apple-press ${
                       isActive
                         ? 'bg-amber-400 text-slate-950 hover:bg-amber-300'
                         : 'bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-700'
                     }`}
                   >
-                    <Play className="h-4 w-4 fill-current" />
-                    <span>{isActive ? 'START WORKOUT' : isPast ? 'RE-LOG WORKOUT' : 'LAUNCH WORKOUT'}</span>
+                    <Play className="h-3 w-3 fill-current shrink-0" />
+                    <span>{isActive ? 'START' : isPast ? 'RE-LOG' : 'START'}</span>
                   </button>
                 ) : (
-                  <div className="py-2 text-center text-xs font-mono font-bold text-slate-400 bg-slate-950/50 rounded-2xl border border-slate-900 flex items-center justify-center gap-1.5">
-                    <Moon className="h-3.5 w-3.5 text-amber-400" />
-                    <span>Active Recovery & Rest</span>
+                  <div className="py-1.5 text-center text-[10px] sm:text-xs font-mono font-bold text-slate-400 bg-slate-950/50 rounded-xl border border-slate-900 flex items-center justify-center gap-1">
+                    <Moon className="h-3 w-3 text-amber-400 shrink-0" />
+                    <span>Rest Day</span>
                   </div>
                 )}
               </div>
@@ -237,6 +239,7 @@ export const WeeklyScheduleCard: React.FC = () => {
           );
         })}
       </div>
+
     </div>
   );
 };
