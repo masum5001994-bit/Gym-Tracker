@@ -22,7 +22,14 @@ export const DEFAULT_CYCLE_DAYS: CustomCycleDay[] = [
     exerciseCount: 6,
     estimatedMinutes: 50,
     tags: ['Chest', 'Back'],
-    exercisePreview: ['Incline DB Press', 'Lat Pulldown', 'Incline Fly', 'Chest Supported Row'],
+    exercisePreview: [
+      'Incline DB Press',
+      'Lat Pulldown',
+      'Incline DB Fly',
+      'Chest Supported Row',
+      'Standing Barbell OHP',
+      'Incline DB Curls',
+    ],
   },
   {
     dayNum: 2,
@@ -34,7 +41,13 @@ export const DEFAULT_CYCLE_DAYS: CustomCycleDay[] = [
     exerciseCount: 5,
     estimatedMinutes: 45,
     tags: ['Quads', 'Calves'],
-    exercisePreview: ['Barbell Squat', 'Romanian Deadlift', 'Seated Leg Ext', 'Walking Lunges'],
+    exercisePreview: [
+      'Barbell Squat',
+      'Romanian Deadlift',
+      'Seated Leg Ext',
+      'Walking Lunges',
+      'Standing Calf Raises',
+    ],
   },
   {
     dayNum: 3,
@@ -42,6 +55,8 @@ export const DEFAULT_CYCLE_DAYS: CustomCycleDay[] = [
     type: 'rest',
     title: 'REST DAY',
     focus: 'Active Recovery & Mobility',
+    exerciseCount: 3,
+    estimatedMinutes: 20,
     tags: ['Recovery'],
     exercisePreview: ['Light Walking', 'Foam Rolling', 'Mobility Drills'],
   },
@@ -55,7 +70,14 @@ export const DEFAULT_CYCLE_DAYS: CustomCycleDay[] = [
     exerciseCount: 6,
     estimatedMinutes: 50,
     tags: ['Chest', 'Delts'],
-    exercisePreview: ['Overhead Press', 'Incline Press', 'Cable Flyes', 'Lateral Raises'],
+    exercisePreview: [
+      'Overhead Press',
+      'Incline Press',
+      'Cable Flyes',
+      'Lateral Raises',
+      'Triceps Pushdowns',
+      'Skullcrushers',
+    ],
   },
   {
     dayNum: 5,
@@ -67,7 +89,14 @@ export const DEFAULT_CYCLE_DAYS: CustomCycleDay[] = [
     exerciseCount: 6,
     estimatedMinutes: 50,
     tags: ['Back', 'Biceps'],
-    exercisePreview: ['Deadlift', 'Lat Pulldown', 'DB Rows', 'Incline Curls'],
+    exercisePreview: [
+      'Deadlift',
+      'Lat Pulldown',
+      'DB Rows',
+      'Facepulls',
+      'Hammer Curls',
+      'Incline Curls',
+    ],
   },
   {
     dayNum: 6,
@@ -79,7 +108,13 @@ export const DEFAULT_CYCLE_DAYS: CustomCycleDay[] = [
     exerciseCount: 5,
     estimatedMinutes: 45,
     tags: ['Glutes', 'Hamstrings'],
-    exercisePreview: ['Barbell Squat', 'Hip Thrust', 'Split Squat', 'Leg Curls'],
+    exercisePreview: [
+      'Barbell Squat',
+      'Hip Thrust',
+      'Split Squat',
+      'Lying Leg Curls',
+      'Seated Calf Raises',
+    ],
   },
   {
     dayNum: 7,
@@ -87,10 +122,13 @@ export const DEFAULT_CYCLE_DAYS: CustomCycleDay[] = [
     type: 'rest',
     title: 'REST DAY',
     focus: 'Full CNS Reset',
+    exerciseCount: 1,
+    estimatedMinutes: 0,
     tags: ['CNS Reset'],
     exercisePreview: ['Sleep & Supercompensation'],
   },
 ];
+
 
 const STORAGE_KEY = 'bws_custom_cycle_days';
 
