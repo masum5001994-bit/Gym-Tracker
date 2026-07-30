@@ -102,15 +102,20 @@ export const WeeklyScheduleCard: React.FC = () => {
     }
   };
 
-  const completedCount = workoutLogs.length;
+  // Only count valid, non-deleted workout logs
+  const completedWorkouts = workoutLogs.filter((w) => !(w as any).deleted);
+  const completedCount = completedWorkouts.length;
+
+  // 7-Day Cycle Loop Math (Week 1 = 0..6, Week 2 = 7..13, etc.)
+  const currentWeekNumber = Math.floor(completedCount / 7) + 1;
   const currentCycleIndex = completedCount % 7;
   const activeDay = cycleDays[currentCycleIndex];
 
   let daysSinceLastWorkout = 0;
   let isMissed = false;
 
-  if (workoutLogs.length > 0) {
-    const lastDate = new Date(workoutLogs[0].date);
+  if (completedWorkouts.length > 0) {
+    const lastDate = new Date(completedWorkouts[0].date);
     const now = new Date();
     const diffMs = now.getTime() - lastDate.getTime();
     daysSinceLastWorkout = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -133,11 +138,16 @@ export const WeeklyScheduleCard: React.FC = () => {
             </div>
             <div>
               {/* HERO TEXT */}
-              <h1 className="text-2xl sm:text-3xl font-black uppercase text-amber-400 font-condensed tracking-wider leading-none apple-display-title">
-                7-DAY WORKOUT SCHEDULE
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-black uppercase text-amber-400 font-condensed tracking-wider leading-none apple-display-title">
+                  7-DAY WORKOUT SCHEDULE
+                </h1>
+                <span className="text-xs font-black text-slate-950 bg-amber-400 px-2.5 py-0.5 rounded-lg font-mono shrink-0 shadow-sm">
+                  WEEK {currentWeekNumber}
+                </span>
+              </div>
               <p className="text-xs sm:text-sm text-slate-300 font-bold pt-1">
-                5 Science Workouts • 2 Active Rest Days
+                5 Science Workouts • 2 Active Rest Days (Auto-Resets Every 7 Days)
               </p>
             </div>
           </div>
@@ -155,7 +165,7 @@ export const WeeklyScheduleCard: React.FC = () => {
               <span>Customize</span>
             </button>
 
-            {workoutLogs.length > 0 && (
+            {completedWorkouts.length > 0 && (
               <button
                 onClick={handleResetLogs}
                 className="flex items-center gap-1.5 text-xs font-black text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 px-3 py-1.5 rounded-xl border border-rose-500/40 uppercase tracking-wider font-condensed transition apple-press shadow-sm"
@@ -168,6 +178,7 @@ export const WeeklyScheduleCard: React.FC = () => {
           </div>
         </div>
       </div>
+
 
       {/* Missed Day Alert */}
       {isMissed && (
