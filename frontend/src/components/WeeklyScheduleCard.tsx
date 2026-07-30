@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Moon, Play, AlertCircle, RotateCcw, Layers, Edit3 } from 'lucide-react';
+import { Calendar, Moon, Play, AlertCircle, RotateCcw, Edit3, Dumbbell, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { WorkoutLog } from '../types';
@@ -11,7 +11,6 @@ export const WeeklyScheduleCard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([]);
-  const [expandedDayIndex, setExpandedDayIndex] = useState<number | null>(null);
   const [cycleDays, setCycleDays] = useState<CustomCycleDay[]>(getCustomCycleDays());
 
   const fetchLogs = () => {
@@ -40,13 +39,6 @@ export const WeeklyScheduleCard: React.FC = () => {
     }
   };
 
-  const toggleDayExpansion = (idx: number, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    triggerHaptic('light');
-    setExpandedDayIndex((prev) => (prev === idx ? null : idx));
-  };
-
-
   const completedCount = workoutLogs.length;
   const currentCycleIndex = completedCount % 7;
   const activeDay = cycleDays[currentCycleIndex];
@@ -65,53 +57,60 @@ export const WeeklyScheduleCard: React.FC = () => {
   }
 
   return (
-    <div className="w-full rounded-3xl glass-panel p-3 sm:p-4 border border-blue-900/60 shadow-2xl space-y-2.5 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950/30">
-      {/* Header Bar */}
-      <div className="flex items-center justify-between gap-2 px-1 pb-1">
-        <div className="flex items-center gap-2 min-w-0">
-          <Calendar className="h-4 w-4 text-amber-400 shrink-0" />
-          <h2 className="text-xs sm:text-sm font-black uppercase text-slate-100 font-condensed tracking-wide truncate apple-display-title">
-            7-DAY WORKOUT SCHEDULE
-          </h2>
-        </div>
+    <div className="w-full rounded-3xl glass-panel p-4 sm:p-6 border-2 border-amber-400/40 shadow-2xl shadow-amber-400/10 space-y-6 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950/40">
+      {/* HERO TEXT HEADER */}
+      <div className="space-y-2 border-b border-slate-800 pb-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400/20 border-2 border-amber-400/50 text-amber-400 shadow-md shrink-0">
+              <Calendar className="h-7 w-7 stroke-[2.5]" />
+            </div>
+            <div>
+              {/* HERO TEXT */}
+              <h1 className="text-2xl sm:text-3xl font-black uppercase text-amber-400 font-condensed tracking-wider leading-none apple-display-title">
+                7-DAY WORKOUT SCHEDULE
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 font-bold pt-1">
+                5 Science Workouts • 2 Active Rest Days
+              </p>
+            </div>
+          </div>
 
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={() => {
-              triggerHaptic('light');
-              navigate('/profile');
-            }}
-            className="flex items-center gap-1 text-[9px] font-black text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 px-2 py-0.5 rounded-lg border border-amber-400/30 uppercase tracking-wider font-condensed transition apple-press"
-            title="Rename Days & Custom Exercises"
-          >
-            <Edit3 className="h-3 w-3" />
-            <span>Customize</span>
-          </button>
-
-          {workoutLogs.length > 0 && (
+          <div className="flex items-center gap-2">
             <button
-              onClick={handleResetLogs}
-              className="flex items-center gap-1 text-[9px] font-black text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30 uppercase tracking-wider font-condensed transition apple-press"
-              title="Reset Cycle Progress"
+              onClick={() => {
+                triggerHaptic('light');
+                navigate('/profile');
+              }}
+              className="flex items-center gap-1.5 text-xs font-black text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 px-3 py-1.5 rounded-xl border border-amber-400/40 uppercase tracking-wider font-condensed transition apple-press shadow-sm"
+              title="Rename Days & Custom Exercises"
             >
-              <RotateCcw className="h-3 w-3" />
-              <span>Reset</span>
+              <Edit3 className="h-3.5 w-3.5" />
+              <span>Customize</span>
             </button>
-          )}
 
-          <span className="text-[10px] font-black text-slate-950 bg-amber-400 px-2.5 py-0.5 rounded-lg font-mono">
-            DAY {activeDay.dayNum} ACTIVE
-          </span>
+            {workoutLogs.length > 0 && (
+              <button
+                onClick={handleResetLogs}
+                className="flex items-center gap-1.5 text-xs font-black text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 px-3 py-1.5 rounded-xl border border-rose-500/40 uppercase tracking-wider font-condensed transition apple-press shadow-sm"
+                title="Reset Cycle Progress"
+              >
+                <RotateCcw className="h-3.5 w-3.5 text-rose-400" />
+                <span>Reset</span>
+              </button>
+            )}
+          </div>
         </div>
-
       </div>
 
       {/* Missed Day Alert */}
       {isMissed && (
-        <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 flex items-center justify-between gap-2 text-xs font-bold">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <AlertCircle className="h-3.5 w-3.5 text-rose-400 shrink-0" />
-            <span className="truncate">{daysSinceLastWorkout}d idle! Next: {activeDay.title}.</span>
+        <div className="p-3.5 rounded-2xl bg-rose-500/20 border border-rose-500/50 text-rose-100 flex items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <AlertCircle className="h-5 w-5 text-rose-400 shrink-0" />
+            <span className="text-xs sm:text-sm font-bold truncate">
+              {daysSinceLastWorkout} days idle! Next: <strong className="underline text-amber-300">{activeDay.title}</strong>.
+            </span>
           </div>
           {activeDay.type === 'workout' && (
             <button
@@ -119,7 +118,7 @@ export const WeeklyScheduleCard: React.FC = () => {
                 triggerHaptic('medium');
                 navigate(`/workout/${activeDay.routineId || 'custom-session'}`);
               }}
-              className="rounded-lg bg-rose-500 text-slate-950 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider shrink-0 apple-press"
+              className="rounded-xl bg-rose-500 text-slate-950 px-3.5 py-1.5 text-xs font-black uppercase tracking-wider shrink-0 apple-press shadow-md"
             >
               Resume
             </button>
@@ -127,135 +126,113 @@ export const WeeklyScheduleCard: React.FC = () => {
         </div>
       )}
 
-      {/* Ultra-Compact 7-Day Rows - All 7 Days Fit on One Screen */}
-      <div className="space-y-1">
+      {/* CARDS VIEW FOR ALL DAYS (Day 1 through Day 7) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {cycleDays.map((item, idx) => {
           const isActive = item.dayNum === activeDay.dayNum;
           const isPast = idx < currentCycleIndex;
-          const isExpanded = expandedDayIndex === idx;
 
           return (
             <div
               key={item.dayLabel}
-              className={`rounded-xl transition-all border apple-press ${
+              onClick={() => {
+                triggerHaptic('light');
+                if (item.type === 'workout') {
+                  navigate(`/workout/${item.routineId || 'custom-session'}`);
+                }
+              }}
+              className={`rounded-3xl p-4 sm:p-5 border-2 transition-all cursor-pointer apple-press shadow-lg space-y-3 flex flex-col justify-between ${
                 isActive
-                  ? 'bg-slate-900 border-amber-400/90 shadow-sm shadow-amber-400/20'
+                  ? 'bg-slate-900/95 border-amber-400 shadow-amber-400/20 ring-2 ring-amber-400/30'
                   : isPast
-                  ? 'bg-slate-950/80 border-slate-800/80'
+                  ? 'bg-slate-950/90 border-slate-800/90 hover:border-slate-700'
                   : item.type === 'rest'
-                  ? 'bg-slate-950/40 border-slate-900/60'
-                  : 'bg-slate-950/60 border-slate-800/60'
+                  ? 'bg-slate-950/60 border-slate-900/80 hover:border-slate-800'
+                  : 'bg-slate-900/80 border-slate-800/80 hover:border-amber-400/50'
               }`}
             >
-              {/* Single Compact Row */}
-              <div
-                onClick={() => {
-                  triggerHaptic('light');
-                  if (item.type === 'workout') {
-                    navigate(`/workout/${item.routineId || 'custom-session'}`);
-                  }
-                }}
-                className="flex items-center justify-between gap-2 px-3 py-2.5 cursor-pointer select-none"
-              >
-                {/* Left: Day Badge + Title + Tag */}
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <span className={`text-[11px] font-black uppercase font-mono px-2 py-0.5 rounded-lg border shrink-0 ${
-                    isActive
-                      ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold shadow-sm'
-                      : isPast
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                      : 'bg-slate-900 text-slate-400 border-slate-800'
-                  }`}>
+              {/* Day Card Header */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span
+                    className={`text-xs font-black uppercase font-mono px-3 py-1 rounded-xl border-2 shrink-0 shadow-sm ${
+                      isActive
+                        ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold'
+                        : isPast
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                        : 'bg-slate-900 text-slate-400 border-slate-800'
+                    }`}
+                  >
                     {item.dayLabel}
                   </span>
 
-                  <div className="min-w-0 flex-1 flex items-baseline gap-2">
-                    <h4 className="text-sm sm:text-base font-black text-slate-100 uppercase tracking-tight font-condensed truncate">
+                  <div className="min-w-0">
+                    <h3 className="text-base sm:text-lg font-black text-slate-100 uppercase tracking-wide font-condensed truncate apple-display-title">
                       {item.title}
-                    </h4>
-                    <span className="text-[11px] text-slate-400 font-semibold truncate hidden sm:inline">
-                      • {item.focus}
-                    </span>
+                    </h3>
+                    <p className="text-xs text-slate-400 font-semibold truncate">
+                      {item.focus}
+                    </p>
                   </div>
                 </div>
 
-                {/* Right: Actions */}
-                <div className="flex items-center gap-2 shrink-0">
-                  {isActive && item.type === 'workout' ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        triggerHaptic('medium');
-                        navigate(`/workout/${item.routineId || 'custom-session'}`);
-                      }}
-                      className="flex items-center gap-1 rounded-lg bg-amber-400 text-slate-950 px-3 py-1 text-xs font-black uppercase font-condensed shadow-sm apple-press"
-                    >
-                      <Play className="h-3 w-3 fill-current" />
-                      <span>START</span>
-                    </button>
-                  ) : isPast ? (
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-black text-emerald-400 font-mono">✓ DONE</span>
-                      <button
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          if (window.confirm(`Reset ${item.dayLabel} (${item.title}) back to active status?`)) {
-                            triggerHaptic('warning');
-                            const latestLog = workoutLogs[0];
-                            if (latestLog) {
-                              await api.deleteWorkout(latestLog.id, user?.uid);
-                              fetchLogs();
-                            }
-                          }
-                        }}
-                        className="flex items-center gap-1 text-[10px] font-black text-rose-300 bg-rose-500/20 border border-rose-500/30 px-2 py-0.5 rounded-lg uppercase font-condensed apple-press"
-                        title="Reset Day Status"
-                      >
-                        <RotateCcw className="h-2.5 w-2.5 text-rose-400" />
-                        <span>Reset</span>
-                      </button>
-                    </div>
-                  ) : item.type === 'rest' ? (
-                    <span className="text-xs font-extrabold text-slate-400 font-mono flex items-center gap-1">
-                      <Moon className="h-3 w-3 text-amber-400" /> REST
-                    </span>
-                  ) : (
-                    <span className="text-xs font-bold text-slate-500 font-mono">READY</span>
-                  )}
-
-                  {/* Drawer Toggle */}
-                  <button
-                    onClick={(e) => toggleDayExpansion(idx, e)}
-                    className="p-1 rounded text-slate-400 hover:text-slate-100 apple-press"
-                    title={isExpanded ? 'Collapse Details' : 'Expand Movements'}
-                  >
-                    <Layers className={`h-3.5 w-3.5 ${isExpanded ? 'text-amber-400' : 'text-slate-500'}`} />
-                  </button>
-                </div>
+                {/* Status Pill */}
+                {isActive && item.type === 'workout' ? (
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-950 bg-amber-400 px-2.5 py-1 rounded-lg shrink-0 shadow-sm">
+                    ACTIVE NOW
+                  </span>
+                ) : isPast ? (
+                  <span className="text-xs font-black text-emerald-400 font-mono flex items-center gap-1 shrink-0">
+                    <CheckCircle2 className="h-4 w-4 stroke-[2.5]" /> DONE
+                  </span>
+                ) : item.type === 'rest' ? (
+                  <span className="text-xs font-extrabold text-amber-400 font-mono flex items-center gap-1 shrink-0">
+                    <Moon className="h-3.5 w-3.5" /> REST
+                  </span>
+                ) : (
+                  <span className="text-xs font-bold text-slate-500 font-mono shrink-0">READY</span>
+                )}
               </div>
 
-
-              {/* Drawer preview details */}
-              {isExpanded && (
-                <div className="px-2.5 pb-2.5 pt-1 border-t border-slate-800/80 space-y-1.5 text-left text-[11px]">
-                  <p className="text-slate-300 font-mono leading-tight bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                    {item.exercisePreview.join(' • ')}
-                  </p>
-                  {item.type === 'workout' && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        triggerHaptic('medium');
-                        navigate(`/workout/${item.routineId || 'custom-session'}`);
-                      }}
-                      className="w-full text-center py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider font-condensed shadow apple-press"
-                    >
-                      <Play className="h-3 w-3 fill-current inline mr-1" />
-                      <span>{isPast ? 'RE-LOG WORKOUT' : 'LAUNCH WORKOUT SESSION'}</span>
-                    </button>
-                  )}
+              {/* Exercises List inside Day Card */}
+              <div className="space-y-1.5 bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
+                <div className="flex items-center justify-between text-[10px] text-amber-400 font-black uppercase font-condensed">
+                  <span className="flex items-center gap-1">
+                    <Dumbbell className="h-3 w-3" />
+                    {item.type === 'workout' ? `${item.exerciseCount || item.exercisePreview.length} Movements` : 'Recovery Plan'}
+                  </span>
+                  {item.estimatedMinutes && <span>⏱ ~{item.estimatedMinutes}m</span>}
                 </div>
-              )}
+                <p className="text-xs text-slate-200 font-mono leading-relaxed truncate">
+                  {item.exercisePreview.join(' • ')}
+                </p>
+              </div>
+
+              {/* Action Button inside Card */}
+              <div className="pt-1">
+                {item.type === 'workout' ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      triggerHaptic('medium');
+                      navigate(`/workout/${item.routineId || 'custom-session'}`);
+                    }}
+                    className={`w-full py-2.5 rounded-2xl text-xs sm:text-sm font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-2 shadow-lg apple-press ${
+                      isActive
+                        ? 'bg-amber-400 text-slate-950 hover:bg-amber-300'
+                        : 'bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-700'
+                    }`}
+                  >
+                    <Play className="h-4 w-4 fill-current" />
+                    <span>{isActive ? 'START WORKOUT' : isPast ? 'RE-LOG WORKOUT' : 'LAUNCH WORKOUT'}</span>
+                  </button>
+                ) : (
+                  <div className="py-2 text-center text-xs font-mono font-bold text-slate-400 bg-slate-950/50 rounded-2xl border border-slate-900 flex items-center justify-center gap-1.5">
+                    <Moon className="h-3.5 w-3.5 text-amber-400" />
+                    <span>Active Recovery & Rest</span>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
@@ -263,6 +240,7 @@ export const WeeklyScheduleCard: React.FC = () => {
     </div>
   );
 };
+
 
 
 
