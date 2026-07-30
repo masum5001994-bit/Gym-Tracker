@@ -7,6 +7,80 @@ import { useAuthContext } from '../context/AuthContext';
 import { triggerHaptic } from '../utils/haptics';
 import { getCustomCycleDays, CustomCycleDay } from '../utils/cycleCustomizer';
 
+const DAY_COLOR_THEMES = [
+  // Day 1: Cyber Amber
+
+  {
+    bg: 'bg-gradient-to-br from-amber-950/90 via-slate-900 to-amber-950/40',
+    border: 'border-amber-400/80 hover:border-amber-300',
+    activeRing: 'ring-2 ring-amber-400/50 shadow-amber-400/20',
+    badgeBg: 'bg-amber-400 text-slate-950 border-amber-300',
+    titleColor: 'text-amber-400',
+    buttonBg: 'bg-amber-400 text-slate-950 hover:bg-amber-300',
+    tagColor: 'text-amber-300',
+  },
+  // Day 2: Electric Cyan
+  {
+    bg: 'bg-gradient-to-br from-cyan-950/90 via-slate-900 to-cyan-950/40',
+    border: 'border-cyan-400/80 hover:border-cyan-300',
+    activeRing: 'ring-2 ring-cyan-400/50 shadow-cyan-400/20',
+    badgeBg: 'bg-cyan-400 text-slate-950 border-cyan-300',
+    titleColor: 'text-cyan-400',
+    buttonBg: 'bg-cyan-400 text-slate-950 hover:bg-cyan-300',
+    tagColor: 'text-cyan-300',
+  },
+  // Day 3: Royal Purple
+  {
+    bg: 'bg-gradient-to-br from-purple-950/90 via-slate-900 to-purple-950/40',
+    border: 'border-purple-400/80 hover:border-purple-300',
+    activeRing: 'ring-2 ring-purple-400/50 shadow-purple-400/20',
+    badgeBg: 'bg-purple-400 text-slate-950 border-purple-300',
+    titleColor: 'text-purple-400',
+    buttonBg: 'bg-purple-400 text-slate-950 hover:bg-purple-300',
+    tagColor: 'text-purple-300',
+  },
+  // Day 4: Crimson Flame
+  {
+    bg: 'bg-gradient-to-br from-rose-950/90 via-slate-900 to-rose-950/40',
+    border: 'border-rose-400/80 hover:border-rose-300',
+    activeRing: 'ring-2 ring-rose-400/50 shadow-rose-400/20',
+    badgeBg: 'bg-rose-400 text-slate-950 border-rose-300',
+    titleColor: 'text-rose-400',
+    buttonBg: 'bg-rose-400 text-slate-950 hover:bg-rose-300',
+    tagColor: 'text-rose-300',
+  },
+  // Day 5: Vivid Emerald
+  {
+    bg: 'bg-gradient-to-br from-emerald-950/90 via-slate-900 to-emerald-950/40',
+    border: 'border-emerald-400/80 hover:border-emerald-300',
+    activeRing: 'ring-2 ring-emerald-400/50 shadow-emerald-400/20',
+    badgeBg: 'bg-emerald-400 text-slate-950 border-emerald-300',
+    titleColor: 'text-emerald-400',
+    buttonBg: 'bg-emerald-400 text-slate-950 hover:bg-emerald-300',
+    tagColor: 'text-emerald-300',
+  },
+  // Day 6: Neon Orange
+  {
+    bg: 'bg-gradient-to-br from-orange-950/90 via-slate-900 to-orange-950/40',
+    border: 'border-orange-400/80 hover:border-orange-300',
+    activeRing: 'ring-2 ring-orange-400/50 shadow-orange-400/20',
+    badgeBg: 'bg-orange-400 text-slate-950 border-orange-300',
+    titleColor: 'text-orange-400',
+    buttonBg: 'bg-orange-400 text-slate-950 hover:bg-orange-300',
+    tagColor: 'text-orange-300',
+  },
+  // Day 7: Spring Lime
+  {
+    bg: 'bg-gradient-to-br from-lime-950/90 via-slate-900 to-lime-950/40',
+    border: 'border-lime-400/80 hover:border-lime-300',
+    activeRing: 'ring-2 ring-lime-400/50 shadow-lime-400/20',
+    badgeBg: 'bg-lime-400 text-slate-950 border-lime-300',
+    titleColor: 'text-lime-400',
+    buttonBg: 'bg-lime-400 text-slate-950 hover:bg-lime-300',
+    tagColor: 'text-lime-300',
+  },
+];
+
 export const WeeklyScheduleCard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
@@ -126,11 +200,12 @@ export const WeeklyScheduleCard: React.FC = () => {
         </div>
       )}
 
-      {/* CARDS VIEW FOR ALL DAYS (Day 1 through Day 7 - 2 COLUMNS LAYOUT) */}
+      {/* CARDS VIEW FOR ALL DAYS (2 COLUMNS WITH VIBRANT DIFFERENT COLOR THEMES) */}
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
         {cycleDays.map((item, idx) => {
           const isActive = item.dayNum === activeDay.dayNum;
           const isPast = idx < currentCycleIndex;
+          const theme = DAY_COLOR_THEMES[idx % DAY_COLOR_THEMES.length];
 
           return (
             <div
@@ -141,27 +216,21 @@ export const WeeklyScheduleCard: React.FC = () => {
                   navigate(`/workout/${item.routineId || 'custom-session'}`);
                 }
               }}
-              className={`rounded-2xl sm:rounded-3xl p-3 sm:p-4 border-2 transition-all cursor-pointer apple-press shadow-lg space-y-2.5 flex flex-col justify-between ${
-                isActive
-                  ? 'bg-slate-900/95 border-amber-400 shadow-amber-400/20 ring-2 ring-amber-400/30'
-                  : isPast
-                  ? 'bg-slate-950/90 border-slate-800/90 hover:border-slate-700'
-                  : item.type === 'rest'
-                  ? 'bg-slate-950/60 border-slate-900/80 hover:border-slate-800'
-                  : 'bg-slate-900/80 border-slate-800/80 hover:border-amber-400/50'
+              className={`rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 border-2 transition-all cursor-pointer apple-press shadow-lg space-y-2.5 flex flex-col justify-between ${theme.bg} ${theme.border} ${
+                isActive ? theme.activeRing : ''
               }`}
             >
-              {/* Day Card Header - HERO DAY & HERO TITLE */}
+              {/* Day Card Header */}
               <div className="flex flex-col gap-1.5 border-b border-slate-800/80 pb-2">
                 <div className="flex items-center justify-between gap-2">
-                  {/* HERO DAY BADGE */}
+                  {/* HERO DAY BADGE WITH UNIQUE COLOR */}
                   <span
                     className={`text-xs sm:text-sm font-black uppercase font-mono px-3 py-1 rounded-xl border-2 shrink-0 shadow-md ${
                       isActive
-                        ? 'bg-amber-400 text-slate-950 border-amber-300 font-extrabold ring-2 ring-amber-400/40'
+                        ? `${theme.badgeBg} font-extrabold ring-2 ring-white/30`
                         : isPast
                         ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/50'
-                        : 'bg-slate-900 text-slate-400 border-slate-800'
+                        : `${theme.badgeBg} opacity-90`
                     }`}
                   >
                     {item.dayLabel}
@@ -169,7 +238,7 @@ export const WeeklyScheduleCard: React.FC = () => {
 
                   {/* Status Pill */}
                   {isActive && item.type === 'workout' ? (
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-950 bg-amber-400 px-2.5 py-1 rounded-lg shrink-0 shadow-md">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-950 bg-amber-400 px-2 py-0.5 rounded-lg shrink-0 shadow-md">
                       ACTIVE NOW
                     </span>
                   ) : isPast ? (
@@ -185,9 +254,9 @@ export const WeeklyScheduleCard: React.FC = () => {
                   )}
                 </div>
 
-                {/* HERO ROUTINE TITLE */}
+                {/* HERO ROUTINE TITLE WITH UNIQUE COLOR */}
                 <div className="min-w-0 pt-0.5">
-                  <h3 className="text-sm sm:text-lg font-black text-amber-400 uppercase tracking-wide font-condensed leading-tight apple-display-title">
+                  <h3 className={`text-sm sm:text-lg font-black uppercase tracking-wide font-condensed leading-tight apple-display-title ${theme.titleColor}`}>
                     {item.title}
                   </h3>
                   <p className="text-[10px] sm:text-xs text-slate-300 font-bold truncate">
@@ -196,10 +265,9 @@ export const WeeklyScheduleCard: React.FC = () => {
                 </div>
               </div>
 
-
               {/* Exercises List inside Day Card */}
               <div className="space-y-1 bg-slate-950/80 p-2 sm:p-2.5 rounded-xl border border-slate-800/80">
-                <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-amber-400 font-black uppercase font-condensed">
+                <div className={`flex items-center justify-between text-[9px] sm:text-[10px] font-black uppercase font-condensed ${theme.tagColor}`}>
                   <span className="flex items-center gap-1 truncate">
                     <Dumbbell className="h-3 w-3 shrink-0" />
                     {item.type === 'workout' ? `${item.exerciseCount || item.exercisePreview.length} Movements` : 'Recovery Plan'}
@@ -220,14 +288,14 @@ export const WeeklyScheduleCard: React.FC = () => {
                       triggerHaptic('medium');
                       navigate(`/workout/${item.routineId || 'custom-session'}`);
                     }}
-                    className={`w-full py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-1.5 shadow-lg apple-press ${
+                    className={`w-full py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-1.5 shadow-lg apple-press ${
                       isActive
-                        ? 'bg-amber-400 text-slate-950 hover:bg-amber-300'
+                        ? `${theme.buttonBg} shadow-md`
                         : 'bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-700'
                     }`}
                   >
                     <Play className="h-3 w-3 fill-current shrink-0" />
-                    <span>{isActive ? 'START' : isPast ? 'RE-LOG' : 'START'}</span>
+                    <span>{isActive ? 'START WORKOUT' : isPast ? 'RE-LOG WORKOUT' : 'LAUNCH WORKOUT'}</span>
                   </button>
                 ) : (
                   <div className="py-1.5 text-center text-[10px] sm:text-xs font-mono font-bold text-slate-400 bg-slate-950/50 rounded-xl border border-slate-900 flex items-center justify-center gap-1">
@@ -240,10 +308,10 @@ export const WeeklyScheduleCard: React.FC = () => {
           );
         })}
       </div>
-
     </div>
   );
 };
+
 
 
 
