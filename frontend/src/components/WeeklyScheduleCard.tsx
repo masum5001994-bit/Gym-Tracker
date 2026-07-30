@@ -7,9 +7,18 @@ import { useAuthContext } from '../context/AuthContext';
 import { triggerHaptic } from '../utils/haptics';
 import { getCustomCycleDays, CustomCycleDay } from '../utils/cycleCustomizer';
 
-const DAY_COLOR_THEMES = [
-  // Day 1: Cyber Amber
+const REST_DAY_THEME = {
+  bg: 'bg-gradient-to-br from-indigo-950/90 via-slate-900 to-indigo-950/40',
+  border: 'border-indigo-500/70 hover:border-indigo-400',
+  activeRing: 'ring-2 ring-indigo-400/50 shadow-indigo-500/20',
+  badgeBg: 'bg-indigo-400 text-slate-950 border-indigo-300',
+  titleColor: 'text-indigo-400',
+  buttonBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/40',
+  tagColor: 'text-indigo-300',
+};
 
+const WORKOUT_DAY_THEMES = [
+  // Day 1 (Workout): Cyber Amber
   {
     bg: 'bg-gradient-to-br from-amber-950/90 via-slate-900 to-amber-950/40',
     border: 'border-amber-400/80 hover:border-amber-300',
@@ -19,7 +28,7 @@ const DAY_COLOR_THEMES = [
     buttonBg: 'bg-amber-400 text-slate-950 hover:bg-amber-300',
     tagColor: 'text-amber-300',
   },
-  // Day 2: Electric Cyan
+  // Day 2 (Workout): Electric Cyan
   {
     bg: 'bg-gradient-to-br from-cyan-950/90 via-slate-900 to-cyan-950/40',
     border: 'border-cyan-400/80 hover:border-cyan-300',
@@ -29,17 +38,7 @@ const DAY_COLOR_THEMES = [
     buttonBg: 'bg-cyan-400 text-slate-950 hover:bg-cyan-300',
     tagColor: 'text-cyan-300',
   },
-  // Day 3: Royal Purple
-  {
-    bg: 'bg-gradient-to-br from-purple-950/90 via-slate-900 to-purple-950/40',
-    border: 'border-purple-400/80 hover:border-purple-300',
-    activeRing: 'ring-2 ring-purple-400/50 shadow-purple-400/20',
-    badgeBg: 'bg-purple-400 text-slate-950 border-purple-300',
-    titleColor: 'text-purple-400',
-    buttonBg: 'bg-purple-400 text-slate-950 hover:bg-purple-300',
-    tagColor: 'text-purple-300',
-  },
-  // Day 4: Crimson Flame
+  // Day 4 (Workout): Crimson Flame
   {
     bg: 'bg-gradient-to-br from-rose-950/90 via-slate-900 to-rose-950/40',
     border: 'border-rose-400/80 hover:border-rose-300',
@@ -49,7 +48,7 @@ const DAY_COLOR_THEMES = [
     buttonBg: 'bg-rose-400 text-slate-950 hover:bg-rose-300',
     tagColor: 'text-rose-300',
   },
-  // Day 5: Vivid Emerald
+  // Day 5 (Workout): Vivid Emerald
   {
     bg: 'bg-gradient-to-br from-emerald-950/90 via-slate-900 to-emerald-950/40',
     border: 'border-emerald-400/80 hover:border-emerald-300',
@@ -59,7 +58,7 @@ const DAY_COLOR_THEMES = [
     buttonBg: 'bg-emerald-400 text-slate-950 hover:bg-emerald-300',
     tagColor: 'text-emerald-300',
   },
-  // Day 6: Neon Orange
+  // Day 6 (Workout): Neon Orange
   {
     bg: 'bg-gradient-to-br from-orange-950/90 via-slate-900 to-orange-950/40',
     border: 'border-orange-400/80 hover:border-orange-300',
@@ -68,16 +67,6 @@ const DAY_COLOR_THEMES = [
     titleColor: 'text-orange-400',
     buttonBg: 'bg-orange-400 text-slate-950 hover:bg-orange-300',
     tagColor: 'text-orange-300',
-  },
-  // Day 7: Spring Lime
-  {
-    bg: 'bg-gradient-to-br from-lime-950/90 via-slate-900 to-lime-950/40',
-    border: 'border-lime-400/80 hover:border-lime-300',
-    activeRing: 'ring-2 ring-lime-400/50 shadow-lime-400/20',
-    badgeBg: 'bg-lime-400 text-slate-950 border-lime-300',
-    titleColor: 'text-lime-400',
-    buttonBg: 'bg-lime-400 text-slate-950 hover:bg-lime-300',
-    tagColor: 'text-lime-300',
   },
 ];
 
@@ -129,6 +118,9 @@ export const WeeklyScheduleCard: React.FC = () => {
       isMissed = true;
     }
   }
+
+  // Count workout days to pick unique theme per workout
+  let workoutDayCounter = 0;
 
   return (
     <div className="w-full rounded-3xl glass-panel p-4 sm:p-6 border-2 border-amber-400/40 shadow-2xl shadow-amber-400/10 space-y-6 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950/40">
@@ -200,12 +192,17 @@ export const WeeklyScheduleCard: React.FC = () => {
         </div>
       )}
 
-      {/* CARDS VIEW FOR ALL DAYS (2 COLUMNS WITH VIBRANT DIFFERENT COLOR THEMES) */}
+      {/* CARDS VIEW FOR ALL DAYS (UNIFIED REST DAY THEME & DISTINCT WORKOUT THEMES) */}
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
         {cycleDays.map((item, idx) => {
           const isActive = item.dayNum === activeDay.dayNum;
           const isPast = idx < currentCycleIndex;
-          const theme = DAY_COLOR_THEMES[idx % DAY_COLOR_THEMES.length];
+
+          let theme = REST_DAY_THEME;
+          if (item.type === 'workout') {
+            theme = WORKOUT_DAY_THEMES[workoutDayCounter % WORKOUT_DAY_THEMES.length];
+            workoutDayCounter++;
+          }
 
           return (
             <div
@@ -223,7 +220,7 @@ export const WeeklyScheduleCard: React.FC = () => {
               {/* Day Card Header */}
               <div className="flex flex-col gap-1.5 border-b border-slate-800/80 pb-2">
                 <div className="flex items-center justify-between gap-2">
-                  {/* HERO DAY BADGE WITH UNIQUE COLOR */}
+                  {/* HERO DAY BADGE */}
                   <span
                     className={`text-xs sm:text-sm font-black uppercase font-mono px-3 py-1 rounded-xl border-2 shrink-0 shadow-md ${
                       isActive
@@ -246,15 +243,15 @@ export const WeeklyScheduleCard: React.FC = () => {
                       <CheckCircle2 className="h-3.5 w-3.5 stroke-[2.5]" /> DONE
                     </span>
                   ) : item.type === 'rest' ? (
-                    <span className="text-xs font-extrabold text-amber-400 font-mono flex items-center gap-1 shrink-0 bg-amber-400/10 px-2 py-0.5 rounded-lg border border-amber-400/20">
-                      <Moon className="h-3.5 w-3.5" /> REST
+                    <span className="text-xs font-extrabold text-indigo-300 font-mono flex items-center gap-1 shrink-0 bg-indigo-500/20 px-2 py-0.5 rounded-lg border border-indigo-400/40">
+                      <Moon className="h-3.5 w-3.5 text-indigo-300" /> REST
                     </span>
                   ) : (
                     <span className="text-xs font-bold text-slate-500 font-mono shrink-0">READY</span>
                   )}
                 </div>
 
-                {/* HERO ROUTINE TITLE WITH UNIQUE COLOR */}
+                {/* HERO ROUTINE TITLE */}
                 <div className="min-w-0 pt-0.5">
                   <h3 className={`text-sm sm:text-lg font-black uppercase tracking-wide font-condensed leading-tight apple-display-title ${theme.titleColor}`}>
                     {item.title}
@@ -298,9 +295,9 @@ export const WeeklyScheduleCard: React.FC = () => {
                     <span>{isActive ? 'START WORKOUT' : isPast ? 'RE-LOG WORKOUT' : 'LAUNCH WORKOUT'}</span>
                   </button>
                 ) : (
-                  <div className="py-1.5 text-center text-[10px] sm:text-xs font-mono font-bold text-slate-400 bg-slate-950/50 rounded-xl border border-slate-900 flex items-center justify-center gap-1">
-                    <Moon className="h-3 w-3 text-amber-400 shrink-0" />
-                    <span>Rest Day</span>
+                  <div className="py-2 text-center text-[10px] sm:text-xs font-mono font-black text-indigo-300 bg-indigo-950/60 rounded-xl border border-indigo-500/40 flex items-center justify-center gap-1.5 shadow-sm">
+                    <Moon className="h-3.5 w-3.5 text-indigo-300 shrink-0" />
+                    <span>Active Recovery & Rest</span>
                   </div>
                 )}
               </div>
@@ -311,6 +308,7 @@ export const WeeklyScheduleCard: React.FC = () => {
     </div>
   );
 };
+
 
 
 
