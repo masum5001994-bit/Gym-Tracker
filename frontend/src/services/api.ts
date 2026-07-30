@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db, auth } from './firebase';
+
 
 import {
   Routine,
@@ -719,16 +720,51 @@ export const api = {
     };
   },
 
-  // Workouts (Scoped to user ID)
+  // Workouts (Scoped to user ID with Cloud Firestore Cross-Device Sync)
   getWorkouts: async (userId?: string): Promise<WorkoutLog[]> => {
     const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
     const KEY = `bws_gym_tracker_workouts_${uid}`;
+    let localLogs: WorkoutLog[] = [];
+
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {}
-    return getStoredWorkouts();
+      if (raw) localLogs = JSON.parse(raw);
+      else localLogs = getStoredWorkouts();
+    } catch (e) {
+      localLogs = getStoredWorkouts();
+    }
+
+    // Cloud Firestore Cross-Device Sync for Mobile & Desktop
+    try {
+      if (uid && uid !== 'main_user') {
+        const q = query(collection(db, 'users', uid, 'workouts'), orderBy('date', 'desc'));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const remoteLogs: WorkoutLog[] = [];
+          snap.forEach((docSnap) => {
+            remoteLogs.push(docSnap.data() as WorkoutLog);
+          });
+
+          // Merge local and remote logs without duplicates
+          const logMap: Record<string, WorkoutLog> = {};
+          [...localLogs, ...remoteLogs].forEach((log) => {
+            if (log.id) logMap[log.id] = log;
+          });
+          const mergedLogs = Object.values(logMap).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+          // Save merged logs to local storage
+          localStorage.setItem(KEY, JSON.stringify(mergedLogs));
+          saveStoredWorkouts(mergedLogs);
+          return mergedLogs;
+        }
+      }
+    } catch (e) {
+      console.warn('Firestore workouts sync note:', e);
+    }
+
+    return localLogs;
   },
+
 
   logWorkout: async (workout: Omit<WorkoutLog, 'id'>, userId?: string): Promise<WorkoutLog> => {
     const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
