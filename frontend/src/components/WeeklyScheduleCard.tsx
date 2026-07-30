@@ -273,22 +273,8 @@ export const WeeklyScheduleCard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Exercises List inside Day Card */}
-              <div className="space-y-1 bg-slate-950/80 p-2 sm:p-2.5 rounded-xl border border-slate-800/80">
-                <div className={`flex items-center justify-between text-[9px] sm:text-[10px] font-black uppercase font-condensed ${theme.tagColor}`}>
-                  <span className="flex items-center gap-1 truncate">
-                    <Dumbbell className="h-3 w-3 shrink-0" />
-                    {item.type === 'workout' ? `${item.exerciseCount || item.exercisePreview.length} Movements` : 'Recovery Plan'}
-                  </span>
-                  {item.estimatedMinutes && <span className="shrink-0">⏱ ~{item.estimatedMinutes}m</span>}
-                </div>
-                <p className="text-[10px] sm:text-xs text-slate-300 font-mono leading-tight line-clamp-2">
-                  {item.exercisePreview.join(' • ')}
-                </p>
-              </div>
-
               {/* Action Button inside Card */}
-              <div className="pt-0.5">
+              <div className="pt-1">
                 {item.type === 'workout' ? (
                   <button
                     onClick={(e) => {
@@ -296,22 +282,23 @@ export const WeeklyScheduleCard: React.FC = () => {
                       triggerHaptic('medium');
                       navigate(`/workout/${item.routineId || 'custom-session'}`);
                     }}
-                    className={`w-full py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-1.5 shadow-lg apple-press ${
+                    className={`w-full py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-1.5 shadow-lg apple-press ${
                       isActive
                         ? `${theme.buttonBg} shadow-md`
                         : 'bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-700'
                     }`}
                   >
-                    <Play className="h-3 w-3 fill-current shrink-0" />
+                    <Play className="h-3.5 w-3.5 fill-current shrink-0" />
                     <span>{isActive ? 'START WORKOUT' : isPast ? 'RE-LOG WORKOUT' : 'LAUNCH WORKOUT'}</span>
                   </button>
                 ) : (
-                  <div className="py-2 text-center text-[10px] sm:text-xs font-mono font-black text-indigo-300 bg-indigo-950/60 rounded-xl border border-indigo-500/40 flex items-center justify-center gap-1.5 shadow-sm">
+                  <div className="py-2 text-center text-xs font-mono font-black text-indigo-300 bg-indigo-950/60 rounded-xl border border-indigo-500/40 flex items-center justify-center gap-1.5 shadow-sm">
                     <Moon className="h-3.5 w-3.5 text-indigo-300 shrink-0" />
                     <span>Active Recovery & Rest</span>
                   </div>
                 )}
               </div>
+
             </div>
           );
         })}
