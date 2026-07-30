@@ -17,12 +17,15 @@ import {
   Timer,
   ChevronDown,
   ChevronUp,
+  Edit3,
 } from 'lucide-react';
 import { Routine, LiveExerciseLog, LiveSetLog, Exercise } from '../types';
 import { api } from '../services/api';
 import { useRestTimer } from '../hooks/useRestTimer';
 import { useAuthContext } from '../context/AuthContext';
 import { RestTimerWidget } from '../components/RestTimerWidget';
+import { saveCustomExerciseName } from '../utils/exerciseRenamer';
+
 import { triggerHaptic } from '../utils/haptics';
 
 import { DeltaBadge } from '../components/DeltaBadge';
@@ -64,6 +67,32 @@ export const LiveWorkout: React.FC = () => {
   };
 
 
+  // Exercise Renaming State
+  const [renamingExIdx, setRenamingExIdx] = useState<number | null>(null);
+  const [newExNameInput, setNewExNameInput] = useState<string>('');
+
+  const handleStartRenameExercise = (exIdx: number, currentName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    triggerHaptic('light');
+    setRenamingExIdx(exIdx);
+    setNewExNameInput(currentName);
+  };
+
+  const handleSaveExerciseRename = (exIdx: number, originalName: string, e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!newExNameInput.trim()) return;
+
+    triggerHaptic('success');
+    const updatedName = newExNameInput.trim();
+    saveCustomExerciseName(originalName, updatedName);
+
+    setExerciseLogs((prev) =>
+      prev.map((log, idx) => (idx === exIdx ? { ...log, exerciseName: updatedName } : log))
+    );
+    setRenamingExIdx(null);
+  };
+
   // Exercise Swap State
   const [swapModalOpen, setSwapModalOpen] = useState<boolean>(false);
   const [swapTargetIndex, setSwapTargetIndex] = useState<number | null>(null);
@@ -75,6 +104,7 @@ export const LiveWorkout: React.FC = () => {
     durationMinutes: number;
     logId: string;
   } | null>(null);
+
 
 
   // Rest Timer Hook
@@ -598,11 +628,55 @@ export const LiveWorkout: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Exercise Title - BIGGER & VERY NOTICEABLE */}
-                  <h3 className="text-lg sm:text-xl font-black text-amber-400 font-condensed tracking-wide uppercase leading-tight pt-1">
-                    {exLog.exerciseName}
-                  </h3>
+                  {/* Exercise Title & Inline Rename Option */}
+                  {renamingExIdx === exIdx ? (
+                    <form
+                      onSubmit={(e) => handleSaveExerciseRename(exIdx, exLog.exerciseName, e)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-2 pt-1"
+                    >
+                      <input
+                        type="text"
+                        value={newExNameInput}
+                        onChange={(e) => setNewExNameInput(e.target.value)}
+                        className="flex-1 rounded-xl bg-slate-950 border-2 border-amber-400 px-3 py-1.5 text-sm font-black text-amber-400 focus:outline-none uppercase font-condensed"
+                        placeholder="Type new exercise name..."
+                        autoFocus
+                      />
+                      <button
+                        type="submit"
+                        className="rounded-xl bg-amber-400 text-slate-950 px-3.5 py-1.5 text-xs font-black uppercase font-condensed apple-press shrink-0"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRenamingExIdx(null);
+                        }}
+                        className="rounded-xl bg-slate-800 text-slate-300 px-2.5 py-1.5 text-xs font-bold apple-press shrink-0"
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="flex items-center justify-between gap-2 pt-1">
+                      <h3 className="text-lg sm:text-xl font-black text-amber-400 font-condensed tracking-wide uppercase leading-tight">
+                        {exLog.exerciseName}
+                      </h3>
+                      <button
+                        onClick={(e) => handleStartRenameExercise(exIdx, exLog.exerciseName, e)}
+                        className="flex items-center gap-1 text-[10px] font-black text-amber-300 bg-amber-400/10 border border-amber-400/30 px-2.5 py-1 rounded-xl uppercase font-condensed hover:bg-amber-400/20 apple-press shrink-0 shadow-sm"
+                        title="Rename this Exercise"
+                      >
+                        <Edit3 className="h-3 w-3 text-amber-400" />
+                        <span>Rename</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
+
 
 
                 {/* Expanded Exercise Body */}
