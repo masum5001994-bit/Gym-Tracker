@@ -855,11 +855,25 @@ export const api = {
 
 
   clearAllWorkouts: async (userId?: string): Promise<void> => {
-    const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
+    const uid = api.getCentralUserId(userId);
     const KEY = `bws_gym_tracker_workouts_${uid}`;
     localStorage.removeItem(KEY);
+    localStorage.removeItem(LOCAL_STORAGE_WORKOUTS_KEY);
     saveStoredWorkouts([]);
+
+    // Mark all remote workouts as deleted in Cloud Firestore so they do not auto-sync back
+    try {
+      const q = query(collection(db, 'users', uid, 'workouts'));
+      const snap = await getDocs(q);
+      const deletePromises = snap.docs.map((docSnap) =>
+        setDoc(doc(db, 'users', uid, 'workouts', docSnap.id), { deleted: true }, { merge: true })
+      );
+      await Promise.all(deletePromises);
+    } catch (e) {
+      console.warn('Firestore clear error:', e);
+    }
   },
+
 
 
   // Volume Matrix (0 sets by default, dynamically populated from last 7 days of logged workouts)
