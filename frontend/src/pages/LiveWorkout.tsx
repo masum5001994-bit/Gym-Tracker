@@ -430,7 +430,29 @@ export const LiveWorkout: React.FC = () => {
     setExerciseLogs(updated);
   };
 
+  const handleDoneWithExercise = (exIdx: number) => {
+    triggerHaptic('success');
+    const newMap = { ...collapsedMap };
+    newMap[exIdx] = true;
+
+    const nextIdx = exIdx + 1;
+    if (nextIdx < exerciseLogs.length) {
+      newMap[nextIdx] = false;
+      setCollapsedMap(newMap);
+
+      setTimeout(() => {
+        const nextEl = document.getElementById(`exercise-card-${nextIdx}`);
+        if (nextEl) {
+          nextEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      setCollapsedMap(newMap);
+    }
+  };
+
   // Finish Workout Session
+
   const handleFinishWorkout = async () => {
     if (!routine) return;
     setSubmitting(true);
@@ -620,7 +642,8 @@ export const LiveWorkout: React.FC = () => {
             : 0;
 
           return (
-            <div key={exLog.exerciseId + exIdx} className="space-y-2">
+            <div id={`exercise-card-${exIdx}`} key={exLog.exerciseId + exIdx} className="space-y-2">
+
 
               {/* Main Exercise Card (Accordion Container) */}
               <div className={`rounded-3xl p-3.5 sm:p-5 transition-all ${themeBorder}`}>
@@ -869,12 +892,26 @@ export const LiveWorkout: React.FC = () => {
                         <Timer className="h-3.5 w-3.5 text-amber-400" /> Rest ({exLog.restSeconds || 120}s)
                       </button>
                     </div>
+
+                    {/* DONE WITH EXERCISE BUTTON */}
+                    <button
+                      onClick={() => handleDoneWithExercise(exIdx)}
+                      className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black uppercase font-condensed tracking-wider text-xs sm:text-sm hover:from-emerald-400 hover:to-teal-300 transition apple-press shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 mt-2"
+                    >
+                      <Check className="h-4 w-4 stroke-[3]" />
+                      <span>
+                        {exIdx + 1 < exerciseLogs.length
+                          ? `DONE WITH EXERCISE • OPEN EX ${exIdx + 2} →`
+                          : '🏆 ALL MOVEMENTS DONE • PROCEED TO FINISH'}
+                      </span>
+                    </button>
                   </div>
                 )}
               </div>
             </div>
           );
         })}
+
       </div>
 
 
