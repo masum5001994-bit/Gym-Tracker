@@ -299,18 +299,9 @@ export const WeeklyScheduleCard: React.FC = () => {
                   <p className="text-xs sm:text-sm text-slate-300 font-extrabold leading-snug">
                     {item.focus}
                   </p>
-
-                  {item.exercisePreview && item.exercisePreview.length > 0 && (
-                    <div className="pt-0.5">
-                      <p className="text-[11px] sm:text-xs text-slate-400 font-medium leading-normal line-clamp-2">
-                        <span className="text-amber-400/90 font-bold uppercase tracking-wider text-[10px] block mb-0.5">MOVEMENTS INCLUDED:</span>
-                        {item.exercisePreview.slice(0, 4).join(' • ')}
-                        {item.exercisePreview.length > 4 ? ` • +${item.exercisePreview.length - 4} more` : ''}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
+
 
 
               {/* Action Area inside Card */}
