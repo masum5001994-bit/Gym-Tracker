@@ -8,6 +8,13 @@ export default {
         condensed: ['"Barlow Condensed"', 'Barlow', 'sans-serif'],
       },
       colors: {
+        'gym-bg': '#0e0e10',
+        'gym-card': '#1b1b1e',
+        'gym-primary': '#ff6b00',
+        'gym-secondary': '#ffd600',
+        'gym-text': '#ffffff',
+        'gym-muted': '#a0a0a6',
+        'gym-border': '#2e2e33',
         bws: {
           blue: {
             400: '#60a5fa',
@@ -25,6 +32,7 @@ export default {
           },
         },
       },
+
     },
   },
   plugins: [],

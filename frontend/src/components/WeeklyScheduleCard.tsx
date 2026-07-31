@@ -25,57 +25,58 @@ const REST_DAY_THEME = {
 };
 
 const WORKOUT_DAY_THEMES = [
-  // Day 1 (Workout): Energizing Electric Neon Lime
+  // Day 1 (Workout): Hyper Neon Orange
   {
-    bg: 'bg-gradient-to-br from-lime-950/70 via-slate-800 to-slate-900',
-    border: 'border-lime-400/80 hover:border-lime-300',
-    activeRing: 'ring-2 ring-lime-400/60 shadow-lime-400/30',
-    badgeBg: 'bg-lime-400 text-slate-950 font-black border-lime-300',
-    titleColor: 'text-lime-400',
-    buttonBg: 'bg-lime-400 text-slate-950 hover:bg-lime-300 font-black shadow-md shadow-lime-400/25',
-    tagColor: 'text-lime-300',
+    bg: 'bg-gradient-to-br from-[#ff6b00]/20 via-[#1b1b1e] to-[#1b1b1e]',
+    border: 'border-[#ff6b00]/80 hover:border-[#ff8533]',
+    activeRing: 'ring-2 ring-[#ff6b00]/60 shadow-[#ff6b00]/30',
+    badgeBg: 'bg-[#ff6b00] text-slate-950 font-black border-[#ff8533]',
+    titleColor: 'text-[#ff6b00]',
+    buttonBg: 'bg-[#ff6b00] text-slate-950 hover:bg-[#e66000] font-black shadow-md shadow-[#ff6b00]/25',
+    tagColor: 'text-[#ff8533]',
   },
-  // Day 2 (Workout): Active Cyan
+  // Day 2 (Workout): Solar Electric Yellow
   {
-    bg: 'bg-gradient-to-br from-cyan-950/70 via-slate-800 to-slate-900',
-    border: 'border-cyan-400/80 hover:border-cyan-300',
-    activeRing: 'ring-2 ring-cyan-400/50 shadow-cyan-400/20',
-    badgeBg: 'bg-cyan-400 text-slate-950 border-cyan-300',
-    titleColor: 'text-cyan-400',
-    buttonBg: 'bg-cyan-400 text-slate-950 hover:bg-cyan-300',
-    tagColor: 'text-cyan-300',
+    bg: 'bg-gradient-to-br from-[#ffd600]/20 via-[#1b1b1e] to-[#1b1b1e]',
+    border: 'border-[#ffd600]/80 hover:border-[#ffe033]',
+    activeRing: 'ring-2 ring-[#ffd600]/50 shadow-[#ffd600]/20',
+    badgeBg: 'bg-[#ffd600] text-slate-950 border-[#ffe033]',
+    titleColor: 'text-[#ffd600]',
+    buttonBg: 'bg-[#ffd600] text-slate-950 hover:bg-[#e6c200]',
+    tagColor: 'text-[#ffd600]',
   },
-  // Day 4 (Workout): Electric Neon Lime
+  // Day 4 (Workout): Hyper Neon Orange
   {
-    bg: 'bg-gradient-to-br from-lime-950/70 via-slate-800 to-slate-900',
-    border: 'border-lime-400/80 hover:border-lime-300',
-    activeRing: 'ring-2 ring-lime-400/50 shadow-lime-400/20',
-    badgeBg: 'bg-lime-400 text-slate-950 border-lime-300',
-    titleColor: 'text-lime-400',
-    buttonBg: 'bg-lime-400 text-slate-950 hover:bg-lime-300',
-    tagColor: 'text-lime-300',
+    bg: 'bg-gradient-to-br from-[#ff6b00]/20 via-[#1b1b1e] to-[#1b1b1e]',
+    border: 'border-[#ff6b00]/80 hover:border-[#ff8533]',
+    activeRing: 'ring-2 ring-[#ff6b00]/50 shadow-[#ff6b00]/20',
+    badgeBg: 'bg-[#ff6b00] text-slate-950 border-[#ff8533]',
+    titleColor: 'text-[#ff6b00]',
+    buttonBg: 'bg-[#ff6b00] text-slate-950 hover:bg-[#e66000]',
+    tagColor: 'text-[#ff8533]',
   },
-  // Day 5 (Workout): Active Cyan
+  // Day 5 (Workout): Solar Electric Yellow
   {
-    bg: 'bg-gradient-to-br from-cyan-950/70 via-slate-800 to-slate-900',
-    border: 'border-cyan-400/80 hover:border-cyan-300',
-    activeRing: 'ring-2 ring-cyan-400/50 shadow-cyan-400/20',
-    badgeBg: 'bg-cyan-400 text-slate-950 border-cyan-300',
-    titleColor: 'text-cyan-400',
-    buttonBg: 'bg-cyan-400 text-slate-950 hover:bg-cyan-300',
-    tagColor: 'text-cyan-300',
+    bg: 'bg-gradient-to-br from-[#ffd600]/20 via-[#1b1b1e] to-[#1b1b1e]',
+    border: 'border-[#ffd600]/80 hover:border-[#ffe033]',
+    activeRing: 'ring-2 ring-[#ffd600]/50 shadow-[#ffd600]/20',
+    badgeBg: 'bg-[#ffd600] text-slate-950 border-[#ffe033]',
+    titleColor: 'text-[#ffd600]',
+    buttonBg: 'bg-[#ffd600] text-slate-950 hover:bg-[#e6c200]',
+    tagColor: 'text-[#ffd600]',
   },
-  // Day 6 (Workout): Electric Neon Lime
+  // Day 6 (Workout): Hyper Neon Orange
   {
-    bg: 'bg-gradient-to-br from-lime-950/70 via-slate-800 to-slate-900',
-    border: 'border-lime-400/80 hover:border-lime-300',
-    activeRing: 'ring-2 ring-lime-400/50 shadow-lime-400/20',
-    badgeBg: 'bg-lime-400 text-slate-950 border-lime-300',
-    titleColor: 'text-lime-400',
-    buttonBg: 'bg-lime-400 text-slate-950 hover:bg-lime-300',
-    tagColor: 'text-lime-300',
+    bg: 'bg-gradient-to-br from-[#ff6b00]/20 via-[#1b1b1e] to-[#1b1b1e]',
+    border: 'border-[#ff6b00]/80 hover:border-[#ff8533]',
+    activeRing: 'ring-2 ring-[#ff6b00]/50 shadow-[#ff6b00]/20',
+    badgeBg: 'bg-[#ff6b00] text-slate-950 border-[#ff8533]',
+    titleColor: 'text-[#ff6b00]',
+    buttonBg: 'bg-[#ff6b00] text-slate-950 hover:bg-[#e66000]',
+    tagColor: 'text-[#ff8533]',
   },
 ];
+
 
 
 

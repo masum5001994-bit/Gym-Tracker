@@ -658,7 +658,7 @@ export const LiveWorkout: React.FC = () => {
             <button
               onClick={handleFinishWorkout}
               disabled={submitting}
-              className="flex items-center gap-1.5 rounded-xl bg-lime-400 hover:bg-lime-300 px-3.5 py-2 text-xs font-black text-slate-950 shadow-md shadow-lime-400/30 active:scale-95 transition touch-manipulation min-h-[38px] border border-lime-300"
+              className="flex items-center gap-1.5 rounded-xl bg-[#ff6b00] hover:bg-[#e66000] px-3.5 py-2 text-xs font-black text-slate-950 shadow-md shadow-[#ff6b00]/30 active:scale-95 transition touch-manipulation min-h-[38px] border border-[#ff8533]"
             >
               <Save className="h-3.5 w-3.5" />
               <span>{submitting ? 'Saving...' : 'Finish'}</span>
@@ -685,17 +685,17 @@ export const LiveWorkout: React.FC = () => {
           const isCurrentActive = !isExDone && !isSkipped && (firstIncompleteIdx === exIdx || !isCollapsed);
           const isUpcoming = !isExDone && !isSkipped && !isCurrentActive;
 
-          let themeBorder = 'border border-slate-800 bg-slate-950/50 opacity-60';
+          let themeBorder = 'border border-[#2e2e33] bg-[#1b1b1e]/60 opacity-60';
 
           if (isSkipped) {
             themeBorder =
-              'border-l-4 border-l-slate-600 border-t border-r border-b border-slate-800 bg-slate-950/40 opacity-70';
+              'border-l-4 border-l-slate-600 border-t border-r border-b border-[#2e2e33] bg-[#1b1b1e]/40 opacity-70';
           } else if (isExDone) {
             themeBorder =
-              'border-2 border-emerald-500/50 bg-gradient-to-br from-slate-950 via-emerald-950/30 to-slate-950 shadow-lg shadow-emerald-500/10 opacity-90';
+              'border-2 border-emerald-500/50 bg-gradient-to-br from-[#0e0e10] via-emerald-950/30 to-[#0e0e10] shadow-lg shadow-emerald-500/10 opacity-90';
           } else if (isCurrentActive) {
             themeBorder =
-              'border-2 border-lime-400 ring-2 ring-lime-400/40 bg-gradient-to-br from-lime-950/40 via-slate-900 to-slate-900 shadow-2xl shadow-lime-400/25';
+              'border-2 border-[#ff6b00] ring-2 ring-[#ff6b00]/40 bg-gradient-to-br from-[#ff6b00]/15 via-[#1b1b1e] to-[#1b1b1e] shadow-2xl shadow-[#ff6b00]/25';
           }
 
           const maxPrevWeight =
@@ -718,34 +718,35 @@ export const LiveWorkout: React.FC = () => {
                       <span
                         className={`rounded-xl px-2.5 py-1 text-[11px] font-black uppercase font-condensed tracking-wider shadow-md ${
                           isSkipped
-                            ? 'bg-slate-800 text-slate-400'
+                            ? 'bg-[#2e2e33] text-[#a0a0a6]'
                             : isExDone
                             ? 'bg-emerald-400 text-slate-950'
                             : isCurrentActive
-                            ? 'bg-lime-400 text-slate-950 animate-pulse'
-                            : 'bg-slate-800 text-slate-300'
+                            ? 'bg-[#ff6b00] text-slate-950 animate-pulse'
+                            : 'bg-[#2e2e33] text-slate-300'
                         }`}
                       >
                         EX {exIdx + 1}/{exerciseLogs.length}
                       </span>
 
                       {isSkipped ? (
-                        <span className="rounded-xl bg-slate-800/90 text-slate-400 border border-slate-700 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
-                          <FastForward className="h-3 w-3 text-slate-400" /> SKIPPED
+                        <span className="rounded-xl bg-[#1b1b1e] text-[#a0a0a6] border border-[#2e2e33] px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                          <FastForward className="h-3 w-3 text-[#a0a0a6]" /> SKIPPED
                         </span>
                       ) : isExDone ? (
                         <span className="rounded-xl bg-emerald-500/30 text-emerald-300 border border-emerald-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
                           <Check className="h-3 w-3 stroke-[3]" /> DONE
                         </span>
                       ) : isCurrentActive ? (
-                        <span className="rounded-xl bg-lime-400/20 text-lime-300 border border-lime-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                        <span className="rounded-xl bg-[#ff6b00]/20 text-[#ff6b00] border border-[#ff6b00]/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
                           ⚡ ACTIVE NOW
                         </span>
                       ) : (
-                        <span className="rounded-xl bg-slate-900 text-slate-500 border border-slate-800 px-2 py-0.5 text-[10px] font-bold uppercase font-condensed tracking-wider">
+                        <span className="rounded-xl bg-[#0e0e10] text-[#a0a0a6] border border-[#2e2e33] px-2 py-0.5 text-[10px] font-bold uppercase font-condensed tracking-wider">
                           UPCOMING
                         </span>
                       )}
+
 
 
 
@@ -845,8 +846,9 @@ export const LiveWorkout: React.FC = () => {
                           isExDone
                             ? 'text-emerald-400'
                             : isCurrentActive
-                            ? 'text-lime-400 glow-text-lime font-black'
+                            ? 'text-[#ff6b00] glow-text-orange font-black'
                             : 'text-slate-300'
+
 
 
 
@@ -986,8 +988,8 @@ export const LiveWorkout: React.FC = () => {
                               onClick={() => handleToggleSet(exIdx, setIdx)}
                               className={`flex h-9 w-10 items-center justify-center rounded-xl border font-black transition-all apple-press shrink-0 min-h-[38px] ${
                                 set.completed
-                                  ? 'bg-lime-400 text-slate-950 border-lime-300 shadow-md shadow-lime-400/30 scale-105'
-                                  : 'bg-slate-900 border-slate-800 text-slate-500 active:bg-slate-800'
+                                  ? 'bg-[#ff6b00] text-slate-950 border-[#ff8533] shadow-md shadow-[#ff6b00]/30 scale-105'
+                                  : 'bg-[#0e0e10] border-[#2e2e33] text-slate-500 active:bg-[#1b1b1e]'
                               }`}
                             >
                               <Check className={`h-4 w-4 ${set.completed ? 'stroke-[3.5]' : 'stroke-[2.5]'}`} />
@@ -1010,18 +1012,19 @@ export const LiveWorkout: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2 pt-1">
                       <button
                         onClick={() => handleAddSet(exIdx)}
-                        className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 py-2 text-xs font-bold text-slate-300 border border-slate-800 transition apple-press min-h-[38px]"
+                        className="flex items-center justify-center gap-1.5 rounded-xl bg-[#0e0e10] hover:bg-[#1b1b1e] py-2 text-xs font-bold text-slate-300 border border-[#2e2e33] transition apple-press min-h-[38px]"
                       >
-                        <Plus className="h-3.5 w-3.5 text-lime-400" /> Add Extra Set
+                        <Plus className="h-3.5 w-3.5 text-[#ff6b00]" /> Add Extra Set
                       </button>
 
                       <button
                         onClick={() => restTimer.startTimer(exLog.restSeconds || 120, exLog.exerciseName)}
-                        className="flex items-center justify-center gap-1.5 rounded-xl bg-cyan-400/10 py-2 text-xs font-extrabold text-cyan-400 border border-cyan-400/30 hover:bg-cyan-400/20 transition apple-press min-h-[38px]"
+                        className="flex items-center justify-center gap-1.5 rounded-xl bg-[#ffd600]/10 py-2 text-xs font-extrabold text-[#ffd600] border border-[#ffd600]/30 hover:bg-[#ffd600]/20 transition apple-press min-h-[38px]"
                       >
-                        <Timer className="h-3.5 w-3.5 text-lime-400" /> Rest ({exLog.restSeconds || 120}s)
+                        <Timer className="h-3.5 w-3.5 text-[#ff6b00]" /> Rest ({exLog.restSeconds || 120}s)
                       </button>
                     </div>
+
 
 
                     {/* DONE WITH EXERCISE BUTTON - Unlocks when 3 sets (or all sets) are completed */}
