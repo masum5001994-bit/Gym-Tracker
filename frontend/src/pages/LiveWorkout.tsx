@@ -629,25 +629,35 @@ export const LiveWorkout: React.FC = () => {
 
 
         {exerciseLogs.map((exLog, exIdx) => {
-          const isEven = exIdx % 2 === 1;
           const isCollapsed = collapsedMap[exIdx] !== false; // Collapsed by default!
           const completedSetsCount = exLog.sets.filter((s) => s.completed).length;
           const isExDone = completedSetsCount >= Math.min(3, exLog.sets.length);
 
-          const themeBorder = isExDone
-            ? 'border-l-4 border-l-emerald-400 border-t border-r border-b border-emerald-500/40 bg-gradient-to-br from-slate-900/95 via-emerald-950/20 to-slate-950 shadow-xl shadow-emerald-500/10'
-            : isEven
-            ? 'border-l-4 border-l-amber-400 border-t border-r border-b border-amber-500/30 bg-gradient-to-br from-slate-900/95 via-amber-950/10 to-slate-950 shadow-xl'
-            : 'border-l-4 border-l-blue-500 border-t border-r border-b border-blue-500/30 bg-gradient-to-br from-slate-900/95 via-blue-950/15 to-slate-950 shadow-xl';
+          // Find the active exercise (the first non-completed exercise in sequence)
+          const firstIncompleteIdx = exerciseLogs.findIndex(
+            (el) => el.sets.filter((s) => s.completed).length < Math.min(3, el.sets.length)
+          );
 
-          const maxPrevWeight = exLog.previousSets && exLog.previousSets.length > 0
-            ? Math.max(...exLog.previousSets.map((s) => s.weightKg || 0))
-            : 0;
+          const isCurrentActive = !isExDone && (firstIncompleteIdx === exIdx || !isCollapsed);
+          const isUpcoming = !isExDone && !isCurrentActive;
+
+          let themeBorder = 'border border-slate-800 bg-slate-950/50 opacity-60';
+
+          if (isExDone) {
+            themeBorder =
+              'border-2 border-emerald-500/50 bg-gradient-to-br from-slate-950 via-emerald-950/30 to-slate-950 shadow-lg shadow-emerald-500/10 opacity-90';
+          } else if (isCurrentActive) {
+            themeBorder =
+              'border-2 border-amber-400 ring-2 ring-amber-400/30 bg-gradient-to-br from-amber-950/40 via-slate-900 to-amber-950/20 shadow-2xl shadow-amber-500/20';
+          }
+
+          const maxPrevWeight =
+            exLog.previousSets && exLog.previousSets.length > 0
+              ? Math.max(...exLog.previousSets.map((s) => s.weightKg || 0))
+              : 0;
 
           return (
             <div id={`exercise-card-${exIdx}`} key={exLog.exerciseId + exIdx} className="space-y-2">
-
-
               {/* Main Exercise Card (Accordion Container) */}
               <div className={`rounded-3xl p-3.5 sm:p-5 transition-all ${themeBorder}`}>
                 {/* Accordion Header Row: Tappable with zero overlap */}
@@ -658,30 +668,49 @@ export const LiveWorkout: React.FC = () => {
                   {/* Top Meta Badges Bar */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`rounded-xl px-2.5 py-1 text-[11px] font-black uppercase font-condensed tracking-wider shadow-md ${
-                        isExDone ? 'bg-emerald-400 text-slate-950' : 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950'
-                      }`}>
+                      <span
+                        className={`rounded-xl px-2.5 py-1 text-[11px] font-black uppercase font-condensed tracking-wider shadow-md ${
+                          isExDone
+                            ? 'bg-emerald-400 text-slate-950'
+                            : isCurrentActive
+                            ? 'bg-amber-400 text-slate-950 animate-pulse'
+                            : 'bg-slate-800 text-slate-300'
+                        }`}
+                      >
                         EX {exIdx + 1}/{exerciseLogs.length}
                       </span>
-                      {isExDone && (
+
+                      {isExDone ? (
                         <span className="rounded-xl bg-emerald-500/30 text-emerald-300 border border-emerald-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
                           <Check className="h-3 w-3 stroke-[3]" /> DONE
                         </span>
+                      ) : isCurrentActive ? (
+                        <span className="rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                          ⚡ ACTIVE NOW
+                        </span>
+                      ) : (
+                        <span className="rounded-xl bg-slate-900 text-slate-500 border border-slate-800 px-2 py-0.5 text-[10px] font-bold uppercase font-condensed tracking-wider">
+                          UPCOMING
+                        </span>
                       )}
+
                       <span className="rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-slate-300 border border-slate-800">
                         {exLog.category}
                       </span>
-                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold border ${
-                        isExDone
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                          : 'bg-slate-900 text-slate-400 border-slate-800'
-                      }`}>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold border ${
+                          isExDone
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                            : isCurrentActive
+                            ? 'bg-amber-400/20 text-amber-300 border-amber-400/40 font-black'
+                            : 'bg-slate-900 text-slate-400 border-slate-800'
+                        }`}
+                      >
                         {completedSetsCount}/{exLog.sets.length} SETS
                       </span>
                       <span className="inline-flex items-center gap-1 rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-mono font-black shadow-sm">
                         🏋️ LAST LOAD: {maxPrevWeight > 0 ? `${maxPrevWeight} KG` : `--`}
                       </span>
-
                     </div>
 
                     <button
@@ -692,16 +721,17 @@ export const LiveWorkout: React.FC = () => {
                       className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border shrink-0 touch-manipulation min-h-[36px] apple-press ${
                         isExDone && isCollapsed
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-black'
-                          : 'bg-slate-900 text-amber-400 border-slate-800'
+                          : isCurrentActive && isCollapsed
+                          ? 'bg-amber-400 text-slate-950 font-black border-amber-300 shadow-md shadow-amber-500/20'
+                          : 'bg-slate-900 text-slate-400 border-slate-800'
                       }`}
                     >
                       <span className="text-[10px] font-black uppercase font-condensed">
-                        {isCollapsed ? (isExDone ? '✓ DONE' : 'TAP TO LOG') : 'CLOSE'}
+                        {isCollapsed ? (isExDone ? '✓ DONE' : isCurrentActive ? '▶ LOG NOW' : 'TAP TO LOG') : 'CLOSE'}
                       </span>
                       {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
                     </button>
                   </div>
-
 
                   {/* Exercise Title & Inline Rename Option */}
                   {renamingExIdx === exIdx ? (
@@ -737,7 +767,15 @@ export const LiveWorkout: React.FC = () => {
                     </form>
                   ) : (
                     <div className="flex items-center justify-between gap-2 pt-1">
-                      <h3 className="text-lg sm:text-xl font-black text-amber-400 font-condensed tracking-wide uppercase leading-tight">
+                      <h3
+                        className={`text-lg sm:text-xl font-black font-condensed tracking-wide uppercase leading-tight ${
+                          isExDone
+                            ? 'text-emerald-400'
+                            : isCurrentActive
+                            ? 'text-amber-400 glow-text font-black'
+                            : 'text-slate-300'
+                        }`}
+                      >
                         {exLog.exerciseName}
                       </h3>
                       <button
@@ -751,6 +789,7 @@ export const LiveWorkout: React.FC = () => {
                     </div>
                   )}
                 </div>
+
 
 
 
