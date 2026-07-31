@@ -25,7 +25,17 @@ const REST_DAY_THEME = {
 };
 
 const WORKOUT_DAY_THEMES = [
-  // Day 1 (Workout): Cyber Amber
+  // Day 1 (Workout): Apple Electric Crimson
+  {
+    bg: 'bg-gradient-to-br from-rose-950/90 via-slate-900 to-rose-950/40',
+    border: 'border-rose-500/80 hover:border-rose-400',
+    activeRing: 'ring-2 ring-rose-500/60 shadow-rose-500/30',
+    badgeBg: 'bg-rose-500 text-white border-rose-400',
+    titleColor: 'text-rose-400',
+    buttonBg: 'bg-gradient-to-r from-rose-500 to-red-600 text-white hover:from-rose-600 hover:to-red-700 shadow-md shadow-rose-500/30',
+    tagColor: 'text-rose-300',
+  },
+  // Day 2 (Workout): Solar Gold
   {
     bg: 'bg-gradient-to-br from-amber-950/90 via-slate-900 to-amber-950/40',
     border: 'border-amber-400/80 hover:border-amber-300',
@@ -35,27 +45,17 @@ const WORKOUT_DAY_THEMES = [
     buttonBg: 'bg-amber-400 text-slate-950 hover:bg-amber-300',
     tagColor: 'text-amber-300',
   },
-  // Day 2 (Workout): Electric Cyan
-  {
-    bg: 'bg-gradient-to-br from-cyan-950/90 via-slate-900 to-cyan-950/40',
-    border: 'border-cyan-400/80 hover:border-cyan-300',
-    activeRing: 'ring-2 ring-cyan-400/50 shadow-cyan-400/20',
-    badgeBg: 'bg-cyan-400 text-slate-950 border-cyan-300',
-    titleColor: 'text-cyan-400',
-    buttonBg: 'bg-cyan-400 text-slate-950 hover:bg-cyan-300',
-    tagColor: 'text-cyan-300',
-  },
   // Day 4 (Workout): Crimson Flame
   {
-    bg: 'bg-gradient-to-br from-rose-950/90 via-slate-900 to-rose-950/40',
+    bg: 'bg-gradient-to-br from-rose-950/90 via-slate-900 to-red-950/40',
     border: 'border-rose-400/80 hover:border-rose-300',
     activeRing: 'ring-2 ring-rose-400/50 shadow-rose-400/20',
     badgeBg: 'bg-rose-400 text-slate-950 border-rose-300',
     titleColor: 'text-rose-400',
-    buttonBg: 'bg-rose-400 text-slate-950 hover:bg-rose-300',
+    buttonBg: 'bg-gradient-to-r from-rose-500 to-red-600 text-white hover:from-rose-600 hover:to-red-700',
     tagColor: 'text-rose-300',
   },
-  // Day 5 (Workout): Vivid Emerald
+  // Day 5 (Workout): Mint Emerald
   {
     bg: 'bg-gradient-to-br from-emerald-950/90 via-slate-900 to-emerald-950/40',
     border: 'border-emerald-400/80 hover:border-emerald-300',
@@ -65,17 +65,18 @@ const WORKOUT_DAY_THEMES = [
     buttonBg: 'bg-emerald-400 text-slate-950 hover:bg-emerald-300',
     tagColor: 'text-emerald-300',
   },
-  // Day 6 (Workout): Neon Orange
+  // Day 6 (Workout): Solar Amber
   {
-    bg: 'bg-gradient-to-br from-orange-950/90 via-slate-900 to-orange-950/40',
-    border: 'border-orange-400/80 hover:border-orange-300',
-    activeRing: 'ring-2 ring-orange-400/50 shadow-orange-400/20',
-    badgeBg: 'bg-orange-400 text-slate-950 border-orange-300',
-    titleColor: 'text-orange-400',
-    buttonBg: 'bg-orange-400 text-slate-950 hover:bg-orange-300',
-    tagColor: 'text-orange-300',
+    bg: 'bg-gradient-to-br from-orange-950/90 via-slate-900 to-amber-950/40',
+    border: 'border-amber-400/80 hover:border-amber-300',
+    activeRing: 'ring-2 ring-amber-400/50 shadow-amber-400/20',
+    badgeBg: 'bg-amber-400 text-slate-950 border-amber-300',
+    titleColor: 'text-amber-400',
+    buttonBg: 'bg-amber-400 text-slate-950 hover:bg-amber-300',
+    tagColor: 'text-amber-300',
   },
 ];
+
 
 export const WeeklyScheduleCard: React.FC = () => {
   const navigate = useNavigate();

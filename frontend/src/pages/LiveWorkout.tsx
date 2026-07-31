@@ -658,7 +658,7 @@ export const LiveWorkout: React.FC = () => {
             <button
               onClick={handleFinishWorkout}
               disabled={submitting}
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-3.5 py-2 text-xs font-black text-slate-950 shadow-md shadow-cyan-500/20 active:scale-95 transition touch-manipulation min-h-[38px]"
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-rose-500/30 hover:from-rose-600 hover:to-red-700 active:scale-95 transition touch-manipulation min-h-[38px] border border-rose-400/40"
             >
               <Save className="h-3.5 w-3.5" />
               <span>{submitting ? 'Saving...' : 'Finish'}</span>
@@ -695,7 +695,7 @@ export const LiveWorkout: React.FC = () => {
               'border-2 border-emerald-500/50 bg-gradient-to-br from-slate-950 via-emerald-950/30 to-slate-950 shadow-lg shadow-emerald-500/10 opacity-90';
           } else if (isCurrentActive) {
             themeBorder =
-              'border-2 border-amber-400 ring-2 ring-amber-400/30 bg-gradient-to-br from-amber-950/40 via-slate-900 to-amber-950/20 shadow-2xl shadow-amber-500/20';
+              'border-2 border-rose-500 ring-2 ring-rose-500/40 bg-gradient-to-br from-rose-950/40 via-slate-900 to-rose-950/20 shadow-2xl shadow-rose-500/25';
           }
 
           const maxPrevWeight =
@@ -722,7 +722,7 @@ export const LiveWorkout: React.FC = () => {
                             : isExDone
                             ? 'bg-emerald-400 text-slate-950'
                             : isCurrentActive
-                            ? 'bg-amber-400 text-slate-950 animate-pulse'
+                            ? 'bg-rose-500 text-white animate-pulse'
                             : 'bg-slate-800 text-slate-300'
                         }`}
                       >
@@ -738,7 +738,7 @@ export const LiveWorkout: React.FC = () => {
                           <Check className="h-3 w-3 stroke-[3]" /> DONE
                         </span>
                       ) : isCurrentActive ? (
-                        <span className="rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                        <span className="rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
                           ⚡ ACTIVE NOW
                         </span>
                       ) : (
@@ -746,6 +746,7 @@ export const LiveWorkout: React.FC = () => {
                           UPCOMING
                         </span>
                       )}
+
 
                       <span className="rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-slate-300 border border-slate-800">
                         {exLog.category}
@@ -842,8 +843,9 @@ export const LiveWorkout: React.FC = () => {
                           isExDone
                             ? 'text-emerald-400'
                             : isCurrentActive
-                            ? 'text-amber-400 glow-text font-black'
+                            ? 'text-rose-400 glow-text-crimson font-black'
                             : 'text-slate-300'
+
                         }`}
                       >
                         {exLog.exerciseName}
