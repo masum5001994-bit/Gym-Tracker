@@ -283,16 +283,35 @@ export const WeeklyScheduleCard: React.FC = () => {
                   )}
                 </div>
 
-                {/* HERO ROUTINE TITLE */}
-                <div className="min-w-0 pt-0.5">
-                  <h3 className={`text-sm sm:text-lg font-black uppercase tracking-wide font-condensed leading-tight apple-display-title ${theme.titleColor}`}>
-                    {item.title}
-                  </h3>
-                  <p className="text-[10px] sm:text-xs text-slate-300 font-bold truncate">
+                {/* HERO ROUTINE TITLE & ENHANCED EXERCISE DESCRIPTION */}
+                <div className="min-w-0 pt-1 space-y-1.5">
+                  <div className="flex items-center justify-between gap-1 flex-wrap">
+                    <h3 className={`text-base sm:text-xl font-black uppercase tracking-wide font-condensed leading-tight apple-display-title ${theme.titleColor}`}>
+                      {item.title}
+                    </h3>
+                    {item.exerciseCount && (
+                      <span className="text-[10px] sm:text-xs font-black uppercase font-mono text-slate-400 bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">
+                        {item.exerciseCount} EXERCISES • ~{item.estimatedMinutes || 45}M
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-slate-300 font-extrabold leading-snug">
                     {item.focus}
                   </p>
+
+                  {item.exercisePreview && item.exercisePreview.length > 0 && (
+                    <div className="pt-0.5">
+                      <p className="text-[11px] sm:text-xs text-slate-400 font-medium leading-normal line-clamp-2">
+                        <span className="text-amber-400/90 font-bold uppercase tracking-wider text-[10px] block mb-0.5">MOVEMENTS INCLUDED:</span>
+                        {item.exercisePreview.slice(0, 4).join(' • ')}
+                        {item.exercisePreview.length > 4 ? ` • +${item.exercisePreview.length - 4} more` : ''}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
+
 
               {/* Action Area inside Card */}
               <div className="pt-1">
