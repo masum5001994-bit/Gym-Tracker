@@ -214,7 +214,8 @@ export const WeeklyScheduleCard: React.FC = () => {
       )}
 
       {/* CARDS VIEW FOR ALL DAYS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+
         {cycleDays.map((item) => {
           const isPast = completedDayNums.includes(item.dayNum);
           const isActive = item.dayNum === activeDay.dayNum && !isPast;
