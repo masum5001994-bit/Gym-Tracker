@@ -52,9 +52,10 @@ export const Navbar: React.FC = () => {
                     className={({ isActive }) =>
                       `flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-black uppercase tracking-wider transition-all apple-press ${
                         isActive
-                          ? 'bg-blue-600 text-slate-100 shadow-md shadow-blue-600/30 border border-blue-400/40'
+                          ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md shadow-amber-400/25 border border-amber-300 font-extrabold'
                           : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/80'
                       }`
+
                     }
                   >
                     <Icon className="h-4 w-4" />
@@ -137,7 +138,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile Fixed Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around apple-glass-chrome px-2 py-2 shadow-2xl">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around apple-glass-chrome px-2 py-2 shadow-2xl border-t border-amber-500/20">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -146,19 +147,20 @@ export const Navbar: React.FC = () => {
               to={item.to}
               onClick={() => triggerHaptic('light')}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 rounded-xl px-3 py-1 text-[10px] font-black uppercase tracking-wider transition-all apple-press ${
+                `flex flex-col items-center gap-0.5 rounded-2xl px-3 py-1 text-[10px] font-black uppercase tracking-wider transition-all apple-press ${
                   isActive
-                    ? 'text-amber-400 bg-blue-600/25 border border-blue-400/40 scale-105 shadow-sm'
-                    : 'text-slate-400'
+                    ? 'text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 font-extrabold shadow-lg shadow-amber-400/25 scale-105 border border-amber-300'
+                    : 'text-slate-400 hover:text-slate-200'
                 }`
               }
             >
-              <Icon className="h-5 w-5" />
+              <Icon className="h-4.5 w-4.5 stroke-[2.5]" />
               <span>{item.label}</span>
             </NavLink>
           );
         })}
       </nav>
+
 
 
       {/* Auth Modal */}
