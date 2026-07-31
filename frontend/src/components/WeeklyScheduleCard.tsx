@@ -283,26 +283,52 @@ export const WeeklyScheduleCard: React.FC = () => {
                     {item.focus}
                   </p>
                 </div>
+
+                {/* PROMINENT BIG DONE BANNER FOR COMPLETED DAYS */}
+                {isPast && (
+                  <div className="py-2.5 sm:py-3 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400/60 text-emerald-300 flex items-center justify-center gap-2 shadow-inner my-1">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-400 stroke-[3]" />
+                    <span className="text-base sm:text-lg font-black uppercase font-condensed tracking-widest text-emerald-300">
+                      DONE
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Action Button inside Card */}
               <div className="pt-1">
                 {item.type === 'workout' ? (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      triggerHaptic('medium');
-                      navigate(`/workout/${item.routineId || 'custom-session'}`);
-                    }}
-                    className={`w-full py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-1.5 shadow-lg apple-press ${
-                      isActive
-                        ? `${theme.buttonBg} shadow-md`
-                        : 'bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-700'
-                    }`}
-                  >
-                    <Play className="h-3.5 w-3.5 fill-current shrink-0" />
-                    <span>{isActive ? 'START WORKOUT' : isPast ? 'RE-LOG WORKOUT' : 'LAUNCH WORKOUT'}</span>
-                  </button>
+                  isPast ? (
+                    /* Smaller Re-log Button for Completed Days */
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerHaptic('light');
+                        navigate(`/workout/${item.routineId || 'custom-session'}`);
+                      }}
+                      className="w-full py-1.5 rounded-xl text-[10px] sm:text-[11px] font-extrabold uppercase font-condensed text-slate-400 hover:text-amber-400 bg-slate-950/80 hover:bg-slate-900 border border-slate-800/80 transition apple-press flex items-center justify-center gap-1 shadow-sm"
+                    >
+                      <RotateCcw className="h-3 w-3 text-slate-400" />
+                      <span>Re-log</span>
+                    </button>
+                  ) : (
+                    /* Big Primary Launch/Start Button for Active and Ready Days */
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerHaptic('medium');
+                        navigate(`/workout/${item.routineId || 'custom-session'}`);
+                      }}
+                      className={`w-full py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-black uppercase font-condensed tracking-wider flex items-center justify-center gap-1.5 shadow-lg apple-press ${
+                        isActive
+                          ? `${theme.buttonBg} shadow-md`
+                          : 'bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-700'
+                      }`}
+                    >
+                      <Play className="h-3.5 w-3.5 fill-current shrink-0" />
+                      <span>{isActive ? 'START WORKOUT' : 'LAUNCH WORKOUT'}</span>
+                    </button>
+                  )
                 ) : (
                   <div className="py-2 text-center text-xs font-mono font-black text-indigo-300 bg-indigo-950/60 rounded-xl border border-indigo-500/40 flex items-center justify-center gap-1.5 shadow-sm">
                     <Moon className="h-3.5 w-3.5 text-indigo-300 shrink-0" />
@@ -310,7 +336,6 @@ export const WeeklyScheduleCard: React.FC = () => {
                   </div>
                 )}
               </div>
-
             </div>
           );
         })}
