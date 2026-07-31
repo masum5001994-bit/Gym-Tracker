@@ -893,18 +893,25 @@ export const LiveWorkout: React.FC = () => {
                       </button>
                     </div>
 
-                    {/* DONE WITH EXERCISE BUTTON */}
-                    <button
-                      onClick={() => handleDoneWithExercise(exIdx)}
-                      className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black uppercase font-condensed tracking-wider text-xs sm:text-sm hover:from-emerald-400 hover:to-teal-300 transition apple-press shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 mt-2"
-                    >
-                      <Check className="h-4 w-4 stroke-[3]" />
-                      <span>
-                        {exIdx + 1 < exerciseLogs.length
-                          ? `DONE WITH EXERCISE • OPEN EX ${exIdx + 2} →`
-                          : '🏆 ALL MOVEMENTS DONE • PROCEED TO FINISH'}
-                      </span>
-                    </button>
+                    {/* DONE WITH EXERCISE BUTTON - Unlocks when 3 sets (or all sets) are completed */}
+                    {completedSetsCount >= Math.min(3, exLog.sets.length) ? (
+                      <button
+                        onClick={() => handleDoneWithExercise(exIdx)}
+                        className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black uppercase font-condensed tracking-wider text-xs sm:text-sm hover:from-emerald-400 hover:to-teal-300 transition apple-press shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 mt-2"
+                      >
+                        <Check className="h-4 w-4 stroke-[3]" />
+                        <span>
+                          {exIdx + 1 < exerciseLogs.length
+                            ? `DONE WITH EXERCISE • OPEN EX ${exIdx + 2} →`
+                            : '🏆 ALL MOVEMENTS DONE • PROCEED TO FINISH'}
+                        </span>
+                      </button>
+                    ) : (
+                      <div className="w-full py-2.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 text-slate-400 font-bold text-center text-xs uppercase tracking-wider font-condensed mt-2 flex items-center justify-center gap-2">
+                        <span>Complete {Math.min(3, exLog.sets.length)} sets to unlock Done button ({completedSetsCount}/{Math.min(3, exLog.sets.length)} completed)</span>
+                      </div>
+                    )}
+
                   </div>
                 )}
               </div>
