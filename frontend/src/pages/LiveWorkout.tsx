@@ -632,8 +632,11 @@ export const LiveWorkout: React.FC = () => {
           const isEven = exIdx % 2 === 1;
           const isCollapsed = collapsedMap[exIdx] !== false; // Collapsed by default!
           const completedSetsCount = exLog.sets.filter((s) => s.completed).length;
+          const isExDone = completedSetsCount >= Math.min(3, exLog.sets.length);
 
-          const themeBorder = isEven
+          const themeBorder = isExDone
+            ? 'border-l-4 border-l-emerald-400 border-t border-r border-b border-emerald-500/40 bg-gradient-to-br from-slate-900/95 via-emerald-950/20 to-slate-950 shadow-xl shadow-emerald-500/10'
+            : isEven
             ? 'border-l-4 border-l-amber-400 border-t border-r border-b border-amber-500/30 bg-gradient-to-br from-slate-900/95 via-amber-950/10 to-slate-950 shadow-xl'
             : 'border-l-4 border-l-blue-500 border-t border-r border-b border-blue-500/30 bg-gradient-to-br from-slate-900/95 via-blue-950/15 to-slate-950 shadow-xl';
 
@@ -655,14 +658,21 @@ export const LiveWorkout: React.FC = () => {
                   {/* Top Meta Badges Bar */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 px-2.5 py-1 text-[11px] font-black uppercase font-condensed tracking-wider shadow-md">
+                      <span className={`rounded-xl px-2.5 py-1 text-[11px] font-black uppercase font-condensed tracking-wider shadow-md ${
+                        isExDone ? 'bg-emerald-400 text-slate-950' : 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950'
+                      }`}>
                         EX {exIdx + 1}/{exerciseLogs.length}
                       </span>
+                      {isExDone && (
+                        <span className="rounded-xl bg-emerald-500/30 text-emerald-300 border border-emerald-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                          <Check className="h-3 w-3 stroke-[3]" /> DONE
+                        </span>
+                      )}
                       <span className="rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-slate-300 border border-slate-800">
                         {exLog.category}
                       </span>
                       <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold border ${
-                        completedSetsCount === exLog.sets.length
+                        isExDone
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                           : 'bg-slate-900 text-slate-400 border-slate-800'
                       }`}>
@@ -679,14 +689,19 @@ export const LiveWorkout: React.FC = () => {
                         e.stopPropagation();
                         toggleCollapse(exIdx);
                       }}
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900 text-amber-400 border border-slate-800 shrink-0 touch-manipulation min-h-[36px] apple-press"
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border shrink-0 touch-manipulation min-h-[36px] apple-press ${
+                        isExDone && isCollapsed
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-black'
+                          : 'bg-slate-900 text-amber-400 border-slate-800'
+                      }`}
                     >
                       <span className="text-[10px] font-black uppercase font-condensed">
-                        {isCollapsed ? 'TAP TO LOG' : 'CLOSE'}
+                        {isCollapsed ? (isExDone ? '✓ DONE' : 'TAP TO LOG') : 'CLOSE'}
                       </span>
                       {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
                     </button>
                   </div>
+
 
                   {/* Exercise Title & Inline Rename Option */}
                   {renamingExIdx === exIdx ? (
