@@ -658,7 +658,7 @@ export const LiveWorkout: React.FC = () => {
             <button
               onClick={handleFinishWorkout}
               disabled={submitting}
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-3.5 py-2 text-xs font-black text-slate-950 shadow-md shadow-emerald-500/30 hover:from-emerald-400 hover:to-teal-500 active:scale-95 transition touch-manipulation min-h-[38px] border border-emerald-400/40"
+              className="flex items-center gap-1.5 rounded-xl bg-lime-400 hover:bg-lime-300 px-3.5 py-2 text-xs font-black text-slate-950 shadow-md shadow-lime-400/30 active:scale-95 transition touch-manipulation min-h-[38px] border border-lime-300"
             >
               <Save className="h-3.5 w-3.5" />
               <span>{submitting ? 'Saving...' : 'Finish'}</span>
@@ -695,7 +695,7 @@ export const LiveWorkout: React.FC = () => {
               'border-2 border-emerald-500/50 bg-gradient-to-br from-slate-950 via-emerald-950/30 to-slate-950 shadow-lg shadow-emerald-500/10 opacity-90';
           } else if (isCurrentActive) {
             themeBorder =
-              'border-2 border-emerald-400 ring-2 ring-emerald-400/40 bg-gradient-to-br from-emerald-950/40 via-slate-900 to-emerald-950/20 shadow-2xl shadow-emerald-500/25';
+              'border-2 border-lime-400 ring-2 ring-lime-400/40 bg-gradient-to-br from-lime-950/40 via-slate-900 to-slate-900 shadow-2xl shadow-lime-400/25';
           }
 
           const maxPrevWeight =
@@ -722,7 +722,7 @@ export const LiveWorkout: React.FC = () => {
                             : isExDone
                             ? 'bg-emerald-400 text-slate-950'
                             : isCurrentActive
-                            ? 'bg-emerald-400 text-slate-950 animate-pulse'
+                            ? 'bg-lime-400 text-slate-950 animate-pulse'
                             : 'bg-slate-800 text-slate-300'
                         }`}
                       >
@@ -738,7 +738,7 @@ export const LiveWorkout: React.FC = () => {
                           <Check className="h-3 w-3 stroke-[3]" /> DONE
                         </span>
                       ) : isCurrentActive ? (
-                        <span className="rounded-xl bg-emerald-400/20 text-emerald-300 border border-emerald-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                        <span className="rounded-xl bg-lime-400/20 text-lime-300 border border-lime-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
                           ⚡ ACTIVE NOW
                         </span>
                       ) : (
@@ -746,6 +746,7 @@ export const LiveWorkout: React.FC = () => {
                           UPCOMING
                         </span>
                       )}
+
 
 
 
@@ -844,8 +845,9 @@ export const LiveWorkout: React.FC = () => {
                           isExDone
                             ? 'text-emerald-400'
                             : isCurrentActive
-                            ? 'text-emerald-400 glow-text-emerald font-black'
+                            ? 'text-lime-400 glow-text-lime font-black'
                             : 'text-slate-300'
+
 
 
                         }`}
