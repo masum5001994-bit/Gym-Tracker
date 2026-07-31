@@ -808,22 +808,7 @@ export const api = {
       id: `wlog-${Date.now()}`,
     };
 
-    // 1. Direct Central Firebase Cloud Database write
-    try {
-      const docRef = doc(db, 'users', uid, 'workouts', newLog.id);
-      await setDoc(docRef, newLog);
-    } catch (e) {
-      console.error('Failed central database write:', e);
-    }
-
-    // 2. Also send to Express backend API if active
-    try {
-      await axios.post(`${API_BASE}/workouts`, newLog);
-    } catch (e) {
-      // Background note
-    }
-
-    // 3. Update local cache
+    // 1. Instant 0ms local storage update
     let existing: WorkoutLog[] = [];
     try {
       const raw = localStorage.getItem(KEY);
@@ -832,11 +817,28 @@ export const api = {
     } catch (e) {}
 
     const updated = [newLog, ...existing.filter((w) => w.id !== newLog.id)];
-    localStorage.setItem(KEY, JSON.stringify(updated));
-    saveStoredWorkouts(updated);
+    try {
+      localStorage.setItem(KEY, JSON.stringify(updated));
+      saveStoredWorkouts(updated);
+    } catch (e) {}
+
+    // 2. Non-blocking background sync to Firebase Cloud Firestore & optional API
+    setTimeout(async () => {
+      try {
+        const docRef = doc(db, 'users', uid, 'workouts', newLog.id);
+        await setDoc(docRef, newLog);
+      } catch (e) {
+        console.warn('Background Firestore workout write note:', e);
+      }
+
+      try {
+        await axios.post(`${API_BASE}/workouts`, newLog, { timeout: 1500 });
+      } catch (e) {}
+    }, 0);
 
     return newLog;
   },
+
 
   saveWorkout: async (workout: Omit<WorkoutLog, 'id'>, userId?: string): Promise<WorkoutLog> => {
     return api.logWorkout(workout, userId);
