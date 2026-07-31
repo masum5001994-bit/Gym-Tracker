@@ -3,11 +3,22 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-bg: #0e0e10;
+    --color-card: #1b1b1e;
+    --color-primary: #ff6b00;
+    --color-secondary: #ffd600;
+    --color-text: #ffffff;
+    --color-muted: #a0a0a6;
+    --color-border: #2e2e33;
+  }
+
   body {
-    background-color: #0e0e10;
-    color: #ffffff;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     font-family: 'Barlow', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   h1, h2, h3, h4, .font-condensed {
@@ -18,44 +29,73 @@
 
 /* Apple Watch Fitness Ultra Glassmorphism Tokens */
 .glass-panel {
-  background: rgba(27, 27, 30, 0.94);
+  background: var(--color-card);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 107, 0, 0.35);
+  border: 1px solid var(--color-border);
 }
 
 .glass-card {
-  background: rgba(27, 27, 30, 0.8);
+  background: var(--color-card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(46, 46, 51, 0.8);
+  border: 1px solid var(--color-border);
   transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 107, 0, 0.6);
-  box-shadow: 0 8px 32px 0 rgba(255, 107, 0, 0.25);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+}
+
+.bg-gym-primary {
+  background-color: var(--color-primary) !important;
+}
+
+.text-gym-primary {
+  color: var(--color-primary) !important;
+}
+
+.border-gym-primary {
+  border-color: var(--color-primary) !important;
+}
+
+.bg-gym-secondary {
+  background-color: var(--color-secondary) !important;
+}
+
+.text-gym-secondary {
+  color: var(--color-secondary) !important;
+}
+
+.border-gym-secondary {
+  border-color: var(--color-secondary) !important;
+}
+
+.bg-gym-card {
+  background-color: var(--color-card) !important;
+}
+
+.bg-gym-bg {
+  background-color: var(--color-bg) !important;
+}
+
+.text-gym-muted {
+  color: var(--color-muted) !important;
+}
+
+.border-gym-border {
+  border-color: var(--color-border) !important;
 }
 
 .glow-orange {
-  box-shadow: 0 0 30px -5px rgba(255, 107, 0, 0.7);
-}
-
-.glow-yellow {
-  box-shadow: 0 0 30px -5px rgba(255, 214, 0, 0.7);
-}
-
-.glow-emerald {
-  box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.7);
+  box-shadow: 0 0 30px -5px var(--color-primary);
 }
 
 .glow-text-orange {
-  text-shadow: 0 0 16px rgba(255, 107, 0, 0.6);
+  text-shadow: 0 0 16px var(--color-primary);
 }
 
-.glow-text-yellow {
-  text-shadow: 0 0 16px rgba(255, 214, 0, 0.6);
-}
 
 
 

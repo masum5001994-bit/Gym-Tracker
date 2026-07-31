@@ -25,57 +25,58 @@ const REST_DAY_THEME = {
 };
 
 const WORKOUT_DAY_THEMES = [
-  // Day 1 (Workout): Hyper Neon Orange
+  // Day 1 (Workout): Primary Theme Accent
   {
-    bg: 'bg-gradient-to-br from-[#ff6b00]/20 via-[#1b1b1e] to-[#1b1b1e]',
-    border: 'border-[#ff6b00]/80 hover:border-[#ff8533]',
-    activeRing: 'ring-2 ring-[#ff6b00]/60 shadow-[#ff6b00]/30',
-    badgeBg: 'bg-[#ff6b00] text-slate-950 font-black border-[#ff8533]',
-    titleColor: 'text-[#ff6b00]',
-    buttonBg: 'bg-[#ff6b00] text-slate-950 hover:bg-[#e66000] font-black shadow-md shadow-[#ff6b00]/25',
-    tagColor: 'text-[#ff8533]',
+    bg: 'bg-gym-card',
+    border: 'border-gym-primary/80 hover:border-gym-primary',
+    activeRing: 'ring-2 ring-gym-primary/60 shadow-lg',
+    badgeBg: 'bg-gym-primary text-slate-950 font-black border-gym-primary',
+    titleColor: 'text-gym-primary',
+    buttonBg: 'bg-gym-primary text-slate-950 hover:opacity-90 font-black shadow-md border-gym-primary',
+    tagColor: 'text-gym-primary',
   },
-  // Day 2 (Workout): Solar Electric Yellow
+  // Day 2 (Workout): Secondary Theme Accent
   {
-    bg: 'bg-gradient-to-br from-[#ffd600]/20 via-[#1b1b1e] to-[#1b1b1e]',
-    border: 'border-[#ffd600]/80 hover:border-[#ffe033]',
-    activeRing: 'ring-2 ring-[#ffd600]/50 shadow-[#ffd600]/20',
-    badgeBg: 'bg-[#ffd600] text-slate-950 border-[#ffe033]',
-    titleColor: 'text-[#ffd600]',
-    buttonBg: 'bg-[#ffd600] text-slate-950 hover:bg-[#e6c200]',
-    tagColor: 'text-[#ffd600]',
+    bg: 'bg-gym-card',
+    border: 'border-gym-secondary/80 hover:border-gym-secondary',
+    activeRing: 'ring-2 ring-gym-secondary/50 shadow-md',
+    badgeBg: 'bg-gym-secondary text-slate-950 border-gym-secondary',
+    titleColor: 'text-gym-secondary',
+    buttonBg: 'bg-gym-secondary text-slate-950 hover:opacity-90 border-gym-secondary',
+    tagColor: 'text-gym-secondary',
   },
-  // Day 4 (Workout): Hyper Neon Orange
+  // Day 4 (Workout): Primary Theme Accent
   {
-    bg: 'bg-gradient-to-br from-[#ff6b00]/20 via-[#1b1b1e] to-[#1b1b1e]',
-    border: 'border-[#ff6b00]/80 hover:border-[#ff8533]',
-    activeRing: 'ring-2 ring-[#ff6b00]/50 shadow-[#ff6b00]/20',
-    badgeBg: 'bg-[#ff6b00] text-slate-950 border-[#ff8533]',
-    titleColor: 'text-[#ff6b00]',
-    buttonBg: 'bg-[#ff6b00] text-slate-950 hover:bg-[#e66000]',
-    tagColor: 'text-[#ff8533]',
+    bg: 'bg-gym-card',
+    border: 'border-gym-primary/80 hover:border-gym-primary',
+    activeRing: 'ring-2 ring-gym-primary/50 shadow-md',
+    badgeBg: 'bg-gym-primary text-slate-950 border-gym-primary',
+    titleColor: 'text-gym-primary',
+    buttonBg: 'bg-gym-primary text-slate-950 hover:opacity-90 border-gym-primary',
+    tagColor: 'text-gym-primary',
   },
-  // Day 5 (Workout): Solar Electric Yellow
+  // Day 5 (Workout): Secondary Theme Accent
   {
-    bg: 'bg-gradient-to-br from-[#ffd600]/20 via-[#1b1b1e] to-[#1b1b1e]',
-    border: 'border-[#ffd600]/80 hover:border-[#ffe033]',
-    activeRing: 'ring-2 ring-[#ffd600]/50 shadow-[#ffd600]/20',
-    badgeBg: 'bg-[#ffd600] text-slate-950 border-[#ffe033]',
-    titleColor: 'text-[#ffd600]',
-    buttonBg: 'bg-[#ffd600] text-slate-950 hover:bg-[#e6c200]',
-    tagColor: 'text-[#ffd600]',
+    bg: 'bg-gym-card',
+    border: 'border-gym-secondary/80 hover:border-gym-secondary',
+    activeRing: 'ring-2 ring-gym-secondary/50 shadow-md',
+    badgeBg: 'bg-gym-secondary text-slate-950 border-gym-secondary',
+    titleColor: 'text-gym-secondary',
+    buttonBg: 'bg-gym-secondary text-slate-950 hover:opacity-90 border-gym-secondary',
+    tagColor: 'text-gym-secondary',
   },
-  // Day 6 (Workout): Hyper Neon Orange
+  // Day 6 (Workout): Primary Theme Accent
   {
-    bg: 'bg-gradient-to-br from-[#ff6b00]/20 via-[#1b1b1e] to-[#1b1b1e]',
-    border: 'border-[#ff6b00]/80 hover:border-[#ff8533]',
-    activeRing: 'ring-2 ring-[#ff6b00]/50 shadow-[#ff6b00]/20',
-    badgeBg: 'bg-[#ff6b00] text-slate-950 border-[#ff8533]',
-    titleColor: 'text-[#ff6b00]',
-    buttonBg: 'bg-[#ff6b00] text-slate-950 hover:bg-[#e66000]',
-    tagColor: 'text-[#ff8533]',
+    bg: 'bg-gym-card',
+    border: 'border-gym-primary/80 hover:border-gym-primary',
+    activeRing: 'ring-2 ring-gym-primary/50 shadow-md',
+    badgeBg: 'bg-gym-primary text-slate-950 border-gym-primary',
+    titleColor: 'text-gym-primary',
+    buttonBg: 'bg-gym-primary text-slate-950 hover:opacity-90 border-gym-primary',
+    tagColor: 'text-gym-primary',
   },
 ];
+
 
 
 

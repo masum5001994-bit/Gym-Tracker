@@ -658,7 +658,7 @@ export const LiveWorkout: React.FC = () => {
             <button
               onClick={handleFinishWorkout}
               disabled={submitting}
-              className="flex items-center gap-1.5 rounded-xl bg-[#ff6b00] hover:bg-[#e66000] px-3.5 py-2 text-xs font-black text-slate-950 shadow-md shadow-[#ff6b00]/30 active:scale-95 transition touch-manipulation min-h-[38px] border border-[#ff8533]"
+              className="flex items-center gap-1.5 rounded-xl bg-gym-primary hover:opacity-90 px-3.5 py-2 text-xs font-black text-slate-950 shadow-md active:scale-95 transition touch-manipulation min-h-[38px] border border-gym-primary"
             >
               <Save className="h-3.5 w-3.5" />
               <span>{submitting ? 'Saving...' : 'Finish'}</span>
@@ -685,17 +685,17 @@ export const LiveWorkout: React.FC = () => {
           const isCurrentActive = !isExDone && !isSkipped && (firstIncompleteIdx === exIdx || !isCollapsed);
           const isUpcoming = !isExDone && !isSkipped && !isCurrentActive;
 
-          let themeBorder = 'border border-[#2e2e33] bg-[#1b1b1e]/60 opacity-60';
+          let themeBorder = 'border border-gym-border bg-gym-card/60 opacity-60';
 
           if (isSkipped) {
             themeBorder =
-              'border-l-4 border-l-slate-600 border-t border-r border-b border-[#2e2e33] bg-[#1b1b1e]/40 opacity-70';
+              'border-l-4 border-l-slate-600 border-t border-r border-b border-gym-border bg-gym-card/40 opacity-70';
           } else if (isExDone) {
             themeBorder =
-              'border-2 border-emerald-500/50 bg-gradient-to-br from-[#0e0e10] via-emerald-950/30 to-[#0e0e10] shadow-lg shadow-emerald-500/10 opacity-90';
+              'border-2 border-emerald-500/50 bg-gradient-to-br from-gym-bg via-emerald-950/30 to-gym-bg shadow-lg shadow-emerald-500/10 opacity-90';
           } else if (isCurrentActive) {
             themeBorder =
-              'border-2 border-[#ff6b00] ring-2 ring-[#ff6b00]/40 bg-gradient-to-br from-[#ff6b00]/15 via-[#1b1b1e] to-[#1b1b1e] shadow-2xl shadow-[#ff6b00]/25';
+              'border-2 border-gym-primary ring-2 ring-gym-primary/40 bg-gym-card shadow-2xl';
           }
 
           const maxPrevWeight =
@@ -718,34 +718,35 @@ export const LiveWorkout: React.FC = () => {
                       <span
                         className={`rounded-xl px-2.5 py-1 text-[11px] font-black uppercase font-condensed tracking-wider shadow-md ${
                           isSkipped
-                            ? 'bg-[#2e2e33] text-[#a0a0a6]'
+                            ? 'bg-gym-border text-gym-muted'
                             : isExDone
                             ? 'bg-emerald-400 text-slate-950'
                             : isCurrentActive
-                            ? 'bg-[#ff6b00] text-slate-950 animate-pulse'
-                            : 'bg-[#2e2e33] text-slate-300'
+                            ? 'bg-gym-primary text-slate-950 animate-pulse'
+                            : 'bg-gym-border text-slate-300'
                         }`}
                       >
                         EX {exIdx + 1}/{exerciseLogs.length}
                       </span>
 
                       {isSkipped ? (
-                        <span className="rounded-xl bg-[#1b1b1e] text-[#a0a0a6] border border-[#2e2e33] px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
-                          <FastForward className="h-3 w-3 text-[#a0a0a6]" /> SKIPPED
+                        <span className="rounded-xl bg-gym-card text-gym-muted border border-gym-border px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                          <FastForward className="h-3 w-3 text-gym-muted" /> SKIPPED
                         </span>
                       ) : isExDone ? (
                         <span className="rounded-xl bg-emerald-500/30 text-emerald-300 border border-emerald-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
                           <Check className="h-3 w-3 stroke-[3]" /> DONE
                         </span>
                       ) : isCurrentActive ? (
-                        <span className="rounded-xl bg-[#ff6b00]/20 text-[#ff6b00] border border-[#ff6b00]/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                        <span className="rounded-xl bg-gym-primary/20 text-gym-primary border border-gym-primary/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
                           ⚡ ACTIVE NOW
                         </span>
                       ) : (
-                        <span className="rounded-xl bg-[#0e0e10] text-[#a0a0a6] border border-[#2e2e33] px-2 py-0.5 text-[10px] font-bold uppercase font-condensed tracking-wider">
+                        <span className="rounded-xl bg-gym-bg text-gym-muted border border-gym-border px-2 py-0.5 text-[10px] font-bold uppercase font-condensed tracking-wider">
                           UPCOMING
                         </span>
                       )}
+
 
 
 
