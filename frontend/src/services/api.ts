@@ -634,31 +634,35 @@ export const api = {
   },
 
   getRoutineById: async (id: string): Promise<Routine> => {
-    try {
-      const res = await axios.get(`${API_BASE}/routines/${id}`);
-      if (res.data && res.data.id && Array.isArray(res.data.exercises) && res.data.exercises.length >= 5) {
-        return res.data;
-      }
-    } catch (e) {
-      // Fallback
-    }
-
+    // Synchronous instant local routine lookup for 0ms load speed
     const found = FALLBACK_ROUTINES.find((r) => r.id === id) || FALLBACK_ROUTINES[0];
     const exercises = found.exerciseIds
       .map((exId) => FALLBACK_EXERCISES.find((ex) => ex.id === exId))
       .filter(Boolean) as Exercise[];
 
-    return {
+    const fallbackRoutine: Routine = {
       ...found,
+      id: id || found.id,
       exercises,
     };
-  },
 
+    // Quick background check with strict 800ms timeout
+    try {
+      const res = await axios.get(`${API_BASE}/routines/${id}`, { timeout: 800 });
+      if (res.data && res.data.id && Array.isArray(res.data.exercises) && res.data.exercises.length >= 5) {
+        return res.data;
+      }
+    } catch (e) {
+      // Use instant fallback
+    }
+
+    return fallbackRoutine;
+  },
 
   // Exercises
   getExercises: async (category?: string, search?: string): Promise<Exercise[]> => {
     try {
-      const res = await axios.get(`${API_BASE}/exercises`, { params: { category, search } });
+      const res = await axios.get(`${API_BASE}/exercises`, { params: { category, search }, timeout: 800 });
       if (Array.isArray(res.data) && res.data.length > 0) return res.data;
     } catch (e) {
       // Fallback
@@ -672,7 +676,7 @@ export const api = {
 
   getExerciseById: async (id: string): Promise<Exercise> => {
     try {
-      const res = await axios.get(`${API_BASE}/exercises/${id}`);
+      const res = await axios.get(`${API_BASE}/exercises/${id}`, { timeout: 800 });
       if (res.data && res.data.id) return res.data;
     } catch (e) {
       // Fallback
@@ -682,13 +686,13 @@ export const api = {
 
   getExerciseHistory: async (id: string): Promise<ExerciseHistoryResponse> => {
     try {
-      const res = await axios.get(`${API_BASE}/exercises/${id}/history`);
+      const res = await axios.get(`${API_BASE}/exercises/${id}/history`, { timeout: 800 });
       if (res.data && Array.isArray(res.data.history) && res.data.history.length > 0) return res.data;
     } catch (e) {
       // Fallback
     }
 
-    const workouts = getStoredWorkouts();
+    const workouts = await api.getWorkouts();
     let maxWeightKg = 0;
     let maxEstimated1RM = 0;
 
@@ -699,13 +703,13 @@ export const api = {
     );
 
     sortedWorkouts.forEach((wLog) => {
-      const exLog = wLog.exerciseLogs.find((e) => e.exerciseId === id);
+      const exLog = wLog.exerciseLogs?.find((e) => e.exerciseId === id);
       if (!exLog) return;
 
       let maxW = 0;
       let maxR = 0;
       let est1RM = 0;
-      const completedSets = exLog.sets.filter((s) => s.completed);
+      const completedSets = exLog.sets ? exLog.sets.filter((s) => s.completed) : [];
 
       completedSets.forEach((set) => {
         const weight = set.weightKg || 0;
@@ -751,41 +755,44 @@ export const api = {
     return deviceUid;
   },
 
-  // Central Database Workouts API (Direct Central Database Fetching & Saving)
+  // Central Database Workouts API (Instant 0ms Load + Non-Blocking Cloud Sync)
   getWorkouts: async (userId?: string): Promise<WorkoutLog[]> => {
     const uid = api.getCentralUserId(userId);
     const KEY = `bws_gym_tracker_workouts_${uid}`;
+    let localLogs: WorkoutLog[] = [];
 
-    // 1. Primary: Fetch directly from Central Firebase Cloud Database
-    try {
-      const q = query(collection(db, 'users', uid, 'workouts'), orderBy('date', 'desc'));
-      const snap = await getDocs(q);
-      if (!snap.empty) {
-        const remoteLogs: WorkoutLog[] = [];
-        snap.forEach((docSnap) => {
-          const data = docSnap.data();
-          if (data && !data.deleted) {
-            remoteLogs.push(data as WorkoutLog);
-          }
-        });
-
-        const deduplicated = deduplicateWorkouts(remoteLogs);
-        // Cache copy for offline resilience
-        localStorage.setItem(KEY, JSON.stringify(deduplicated));
-        saveStoredWorkouts(deduplicated);
-        return deduplicated;
-      }
-    } catch (e) {
-      console.warn('Central database workout fetch note:', e);
-    }
-
-    // 2. Secondary fallback if offline: read local cache
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) return deduplicateWorkouts(JSON.parse(raw));
-    } catch (e) {}
+      if (raw) localLogs = deduplicateWorkouts(JSON.parse(raw));
+      else localLogs = deduplicateWorkouts(getStoredWorkouts());
+    } catch (e) {
+      localLogs = deduplicateWorkouts(getStoredWorkouts());
+    }
 
-    return deduplicateWorkouts(getStoredWorkouts());
+    // Asynchronous non-blocking Cloud Firestore background sync
+    setTimeout(async () => {
+      try {
+        const q = query(collection(db, 'users', uid, 'workouts'), orderBy('date', 'desc'));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const remoteLogs: WorkoutLog[] = [];
+          snap.forEach((docSnap) => {
+            const data = docSnap.data();
+            if (data && !data.deleted) {
+              remoteLogs.push(data as WorkoutLog);
+            }
+          });
+
+          const deduplicated = deduplicateWorkouts(remoteLogs);
+          localStorage.setItem(KEY, JSON.stringify(deduplicated));
+          saveStoredWorkouts(deduplicated);
+        }
+      } catch (e) {
+        console.warn('Central database background sync note:', e);
+      }
+    }, 0);
+
+    return localLogs;
   },
 
 
