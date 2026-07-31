@@ -10,6 +10,7 @@ import { History } from './pages/History';
 import { Profile } from './pages/Profile';
 import { RestTimerProvider, useRestTimerContext } from './context/RestTimerContext';
 import { AuthProvider, useAuthContext } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { RestTimerWidget } from './components/RestTimerWidget';
 import { OnboardingModal } from './components/OnboardingModal';
 import { AuthScreen } from './components/AuthScreen';
@@ -52,8 +53,8 @@ const AppContent: React.FC = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center space-y-3">
-        <Activity className="h-8 w-8 text-amber-400 animate-spin mx-auto" />
-        <p className="text-sm text-slate-400 font-bold uppercase tracking-wider font-condensed">Loading BWS Gym Tracker...</p>
+        <Activity className="h-8 w-8 text-[#ff6b00] animate-spin mx-auto" />
+        <p className="text-sm text-[#a0a0a6] font-bold uppercase tracking-wider font-condensed">Loading BWS Gym Tracker...</p>
       </div>
     );
   }
@@ -69,7 +70,7 @@ const AppContent: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+      <div className="min-h-screen bg-[#0e0e10] text-[#ffffff] flex flex-col selection:bg-[#ff6b00] selection:text-slate-950">
         <Navbar />
         <main className="flex-1 mx-auto w-full max-w-7xl px-3 sm:px-6 pt-4 sm:pt-6 pb-28 sm:pb-20">
 
@@ -101,11 +102,14 @@ const AppContent: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <AuthProvider>
-      <RestTimerProvider>
-        <AppContent />
-      </RestTimerProvider>
+      <ThemeProvider>
+        <RestTimerProvider>
+          <AppContent />
+        </RestTimerProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 };
 
 export default App;
+

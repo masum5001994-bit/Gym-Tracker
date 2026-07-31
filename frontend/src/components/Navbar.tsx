@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, History, BookOpen, Dumbbell, User, LogIn, LogOut } from 'lucide-react';
+import { LayoutDashboard, BarChart3, History, BookOpen, Dumbbell, User, LogIn, LogOut, Palette } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
+import { useThemeContext } from '../context/ThemeContext';
 import { AuthModal } from './AuthModal';
-
+import { ThemeModal } from './ThemeModal';
 import { triggerHaptic } from '../utils/haptics';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuthContext();
+  const { activeTheme } = useThemeContext();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [themeModalOpen, setThemeModalOpen] = useState(false);
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -40,7 +43,7 @@ export const Navbar: React.FC = () => {
             </div>
           </NavLink>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <nav className="flex items-center gap-1.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -63,6 +66,21 @@ export const Navbar: React.FC = () => {
                 );
               })}
             </nav>
+
+            {/* Theme Selector Palette Button */}
+            <button
+              onClick={() => {
+                triggerHaptic('medium');
+                setThemeModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 p-2 rounded-xl bg-[#1b1b1e] hover:bg-[#2e2e33] border border-[#2e2e33] text-[#ffd600] transition apple-press"
+              title={`Active Theme: ${activeTheme.name}`}
+            >
+              <Palette className="h-4 w-4" />
+              <span className="text-[10px] font-black uppercase tracking-wider hidden lg:inline font-condensed">
+                {activeTheme.name}
+              </span>
+            </button>
 
             {/* User Auth Action Button */}
             {user ? (
@@ -111,29 +129,43 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Auth Button */}
-        {user ? (
+        <div className="flex items-center gap-2">
+          {/* Mobile Theme Switcher Button */}
           <button
             onClick={() => {
               triggerHaptic('medium');
-              logout();
+              setThemeModalOpen(true);
             }}
-            className="flex items-center gap-1 rounded-xl bg-[#1b1b1e] px-2.5 py-1 text-[10px] font-black text-[#ffd600] border border-[#2e2e33] apple-press"
+            className="p-1.5 rounded-xl bg-[#1b1b1e] text-[#ffd600] border border-[#2e2e33] apple-press"
+            title="Theme Schemes"
           >
-            <span className="max-w-[70px] truncate">{user.displayName || 'User'}</span>
-            <LogOut className="h-3 w-3 text-rose-400" />
+            <Palette className="h-4 w-4" />
           </button>
-        ) : (
-          <button
-            onClick={() => {
-              triggerHaptic('medium');
-              setAuthModalOpen(true);
-            }}
-            className="rounded-lg bg-[#ff6b00]/15 px-2.5 py-1 text-[10px] font-black text-[#ff6b00] border border-[#ff6b00]/40 apple-press"
-          >
-            Sign In
-          </button>
-        )}
+
+          {/* Mobile Auth Button */}
+          {user ? (
+            <button
+              onClick={() => {
+                triggerHaptic('medium');
+                logout();
+              }}
+              className="flex items-center gap-1 rounded-xl bg-[#1b1b1e] px-2.5 py-1 text-[10px] font-black text-[#ffd600] border border-[#2e2e33] apple-press"
+            >
+              <span className="max-w-[60px] truncate">{user.displayName || 'User'}</span>
+              <LogOut className="h-3 w-3 text-rose-400" />
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                triggerHaptic('medium');
+                setAuthModalOpen(true);
+              }}
+              className="rounded-lg bg-[#ff6b00]/15 px-2.5 py-1 text-[10px] font-black text-[#ff6b00] border border-[#ff6b00]/40 apple-press"
+            >
+              Sign In
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Mobile Fixed Bottom Navigation Bar */}
@@ -160,14 +192,10 @@ export const Navbar: React.FC = () => {
         })}
       </nav>
 
-
-
-
-
-
-
-      {/* Auth Modal */}
+      {/* Auth Modal & Theme Modal */}
       <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      <ThemeModal isOpen={themeModalOpen} onClose={() => setThemeModalOpen(false)} />
     </>
   );
 };
+
