@@ -256,15 +256,24 @@ export const WeeklyScheduleCard: React.FC = () => {
                     {item.dayLabel}
                   </span>
 
-                  {/* Status Pill */}
+                  {/* Status Pill / Top Right Action */}
                   {isActive && item.type === 'workout' ? (
                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-950 bg-amber-400 px-2 py-0.5 rounded-lg shrink-0 shadow-md">
                       ACTIVE NOW
                     </span>
                   ) : isPast ? (
-                    <span className="text-xs font-black text-emerald-400 font-mono flex items-center gap-1 shrink-0 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
-                      <CheckCircle2 className="h-3.5 w-3.5 stroke-[2.5]" /> DONE
-                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerHaptic('light');
+                        navigate(`/workout/${item.routineId || 'custom-session'}`);
+                      }}
+                      className="text-[10px] sm:text-xs font-bold text-slate-400 hover:text-amber-300 font-condensed flex items-center gap-1 shrink-0 bg-slate-900 hover:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-800 transition apple-press"
+                      title="Re-log this workout session"
+                    >
+                      <RotateCcw className="h-3 w-3 text-slate-400" />
+                      <span>Re-log</span>
+                    </button>
                   ) : item.type === 'rest' ? (
                     <span className="text-xs font-extrabold text-indigo-300 font-mono flex items-center gap-1 shrink-0 bg-indigo-500/20 px-2 py-0.5 rounded-lg border border-indigo-400/40">
                       <Moon className="h-3.5 w-3.5 text-indigo-300" /> REST
@@ -283,34 +292,19 @@ export const WeeklyScheduleCard: React.FC = () => {
                     {item.focus}
                   </p>
                 </div>
-
-                {/* PROMINENT BIG DONE BANNER FOR COMPLETED DAYS */}
-                {isPast && (
-                  <div className="py-2.5 sm:py-3 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400/60 text-emerald-300 flex items-center justify-center gap-2 shadow-inner my-1">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-400 stroke-[3]" />
-                    <span className="text-base sm:text-lg font-black uppercase font-condensed tracking-widest text-emerald-300">
-                      DONE
-                    </span>
-                  </div>
-                )}
               </div>
 
-              {/* Action Button inside Card */}
+              {/* Action Area inside Card */}
               <div className="pt-1">
                 {item.type === 'workout' ? (
                   isPast ? (
-                    /* Smaller Re-log Button for Completed Days */
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        triggerHaptic('light');
-                        navigate(`/workout/${item.routineId || 'custom-session'}`);
-                      }}
-                      className="w-full py-1.5 rounded-xl text-[10px] sm:text-[11px] font-extrabold uppercase font-condensed text-slate-400 hover:text-amber-400 bg-slate-950/80 hover:bg-slate-900 border border-slate-800/80 transition apple-press flex items-center justify-center gap-1 shadow-sm"
-                    >
-                      <RotateCcw className="h-3 w-3 text-slate-400" />
-                      <span>Re-log</span>
-                    </button>
+                    /* Single Prominent Big DONE Banner for Completed Days */
+                    <div className="py-2.5 sm:py-3 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400/60 text-emerald-300 flex items-center justify-center gap-2 shadow-inner">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-400 stroke-[3]" />
+                      <span className="text-base sm:text-lg font-black uppercase font-condensed tracking-widest text-emerald-300">
+                        DONE
+                      </span>
+                    </div>
                   ) : (
                     /* Big Primary Launch/Start Button for Active and Ready Days */
                     <button
@@ -336,6 +330,7 @@ export const WeeklyScheduleCard: React.FC = () => {
                   </div>
                 )}
               </div>
+
             </div>
           );
         })}
