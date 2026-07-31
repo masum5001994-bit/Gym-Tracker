@@ -6,6 +6,12 @@ import { WorkoutLog } from '../types';
 import { useAuthContext } from '../context/AuthContext';
 import { triggerHaptic } from '../utils/haptics';
 import { getCustomCycleDays, CustomCycleDay } from '../utils/cycleCustomizer';
+import {
+  getCompletedDayNums,
+  getCycleWeekNumber,
+  resetCycleCompletion,
+  unmarkDayCompleted,
+} from '../utils/cycleCompletion';
 
 const REST_DAY_THEME = {
   bg: 'bg-gradient-to-br from-indigo-950/90 via-slate-900 to-indigo-950/40',
@@ -75,6 +81,8 @@ export const WeeklyScheduleCard: React.FC = () => {
   const { user } = useAuthContext();
   const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([]);
   const [cycleDays, setCycleDays] = useState<CustomCycleDay[]>(getCustomCycleDays());
+  const [completedDayNums, setCompletedDayNums] = useState<number[]>(getCompletedDayNums());
+  const [weekNumber, setWeekNumber] = useState<number>(getCycleWeekNumber());
 
   const fetchLogs = () => {
     api
@@ -88,28 +96,30 @@ export const WeeklyScheduleCard: React.FC = () => {
 
     const handleUpdate = () => {
       setCycleDays(getCustomCycleDays());
+      setCompletedDayNums(getCompletedDayNums());
+      setWeekNumber(getCycleWeekNumber());
     };
 
     window.addEventListener('cycle_days_updated', handleUpdate);
-    return () => window.removeEventListener('cycle_days_updated', handleUpdate);
+    window.addEventListener('cycle_completion_updated', handleUpdate);
+
+    return () => {
+      window.removeEventListener('cycle_days_updated', handleUpdate);
+      window.removeEventListener('cycle_completion_updated', handleUpdate);
+    };
   }, [user]);
 
   const handleResetLogs = async () => {
     if (window.confirm('Reset all logged workout sessions? This will uncomplete Day 1 and reset your cycle.')) {
       triggerHaptic('warning');
+      resetCycleCompletion();
       await api.clearAllWorkouts(user?.uid);
       setWorkoutLogs([]);
     }
   };
 
-  // Only count valid, non-deleted workout logs
   const completedWorkouts = workoutLogs.filter((w) => !(w as any).deleted);
-  const completedCount = completedWorkouts.length;
-
-  // 7-Day Cycle Loop Math (Week 1 = 0..6, Week 2 = 7..13, etc.)
-  const currentWeekNumber = Math.floor(completedCount / 7) + 1;
-  const currentCycleIndex = completedCount % 7;
-  const activeDay = cycleDays[currentCycleIndex];
+  const activeDay = cycleDays.find((d) => !completedDayNums.includes(d.dayNum)) || cycleDays[0];
 
   let daysSinceLastWorkout = 0;
   let isMissed = false;
@@ -127,6 +137,7 @@ export const WeeklyScheduleCard: React.FC = () => {
   // Count workout days to pick unique theme per workout
   let workoutDayCounter = 0;
 
+
   return (
     <div className="w-full rounded-3xl glass-panel p-4 sm:p-6 border-2 border-amber-400/40 shadow-2xl shadow-amber-400/10 space-y-6 bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950/40">
       {/* HERO TEXT HEADER */}
@@ -143,7 +154,7 @@ export const WeeklyScheduleCard: React.FC = () => {
                   7-DAY WORKOUT SCHEDULE
                 </h1>
                 <span className="text-xs font-black text-slate-950 bg-amber-400 px-2.5 py-0.5 rounded-lg font-mono shrink-0 shadow-sm">
-                  WEEK {currentWeekNumber}
+                  WEEK {weekNumber}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 font-bold pt-1">
@@ -165,7 +176,7 @@ export const WeeklyScheduleCard: React.FC = () => {
               <span>Customize</span>
             </button>
 
-            {completedWorkouts.length > 0 && (
+            {(completedWorkouts.length > 0 || completedDayNums.length > 0) && (
               <button
                 onClick={handleResetLogs}
                 className="flex items-center gap-1.5 text-xs font-black text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 px-3 py-1.5 rounded-xl border border-rose-500/40 uppercase tracking-wider font-condensed transition apple-press shadow-sm"
@@ -206,8 +217,9 @@ export const WeeklyScheduleCard: React.FC = () => {
       {/* CARDS VIEW FOR ALL DAYS (UNIFIED REST DAY THEME & DISTINCT WORKOUT THEMES) */}
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
         {cycleDays.map((item, idx) => {
-          const isActive = item.dayNum === activeDay.dayNum;
-          const isPast = idx < currentCycleIndex;
+          const isPast = completedDayNums.includes(item.dayNum);
+          const isActive = item.dayNum === activeDay.dayNum && !isPast;
+
 
           let theme = REST_DAY_THEME;
           if (item.type === 'workout') {

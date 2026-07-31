@@ -25,6 +25,8 @@ import { useRestTimer } from '../hooks/useRestTimer';
 import { useAuthContext } from '../context/AuthContext';
 import { RestTimerWidget } from '../components/RestTimerWidget';
 import { saveCustomExerciseName } from '../utils/exerciseRenamer';
+import { getCustomCycleDays } from '../utils/cycleCustomizer';
+import { markDayCompleted } from '../utils/cycleCompletion';
 
 import { triggerHaptic } from '../utils/haptics';
 
@@ -459,12 +461,22 @@ export const LiveWorkout: React.FC = () => {
         localStorage.removeItem(SESSION_KEY);
       } catch (e) {}
 
+      // Explicitly mark this specific cycle day as completed
+      const allDays = getCustomCycleDays();
+      const matchedDay = allDays.find(
+        (d) => d.routineId === routine.id || d.title.toLowerCase() === routine.title.toLowerCase()
+      ) || allDays[0];
+      if (matchedDay) {
+        markDayCompleted(matchedDay.dayNum);
+      }
+
       confetti({
         particleCount: 120,
         spread: 70,
         origin: { y: 0.6 },
         colors: ['#38bdf8', '#0ea5e9', '#f59e0b', '#10b981'],
       });
+
 
       setSummaryData({
         totalVolumeKg: savedLog.totalVolumeKg,
