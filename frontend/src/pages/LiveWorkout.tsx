@@ -18,7 +18,9 @@ import {
   ChevronDown,
   ChevronUp,
   Edit3,
+  FastForward,
 } from 'lucide-react';
+
 import { Routine, LiveExerciseLog, LiveSetLog, Exercise } from '../types';
 import { api } from '../services/api';
 import { useRestTimer } from '../hooks/useRestTimer';
@@ -105,6 +107,10 @@ export const LiveWorkout: React.FC = () => {
   // Plate Calculator Modal State
   const [plateModalOpen, setPlateModalOpen] = useState<boolean>(false);
   const [targetCalcWeight, setTargetCalcWeight] = useState<number>(100);
+
+  // Skipped Exercises State
+  const [skippedMap, setSkippedMap] = useState<Record<number, boolean>>({});
+
 
 
   // Summary Celebration Modal
@@ -451,6 +457,43 @@ export const LiveWorkout: React.FC = () => {
     }
   };
 
+  const handleSkipExercise = (exIdx: number) => {
+    triggerHaptic('light');
+    const newSkipped = { ...skippedMap, [exIdx]: true };
+    setSkippedMap(newSkipped);
+
+    // Collapse current exercise
+    const newCollapsed = { ...collapsedMap, [exIdx]: true };
+
+    // Auto open next exercise if available
+    const nextIdx = exIdx + 1;
+    if (nextIdx < exerciseLogs.length) {
+      newCollapsed[nextIdx] = false;
+      setCollapsedMap(newCollapsed);
+
+      setTimeout(() => {
+        const nextEl = document.getElementById(`exercise-card-${nextIdx}`);
+        if (nextEl) {
+          nextEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      setCollapsedMap(newCollapsed);
+    }
+  };
+
+  const handleUnskipExercise = (exIdx: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    triggerHaptic('success');
+    const newSkipped = { ...skippedMap, [exIdx]: false };
+    setSkippedMap(newSkipped);
+
+    // Re-open exercise
+    const newCollapsed = { ...collapsedMap, [exIdx]: false };
+    setCollapsedMap(newCollapsed);
+  };
+
+
   // Finish Workout Session
 
   const handleFinishWorkout = async () => {
@@ -630,20 +673,24 @@ export const LiveWorkout: React.FC = () => {
 
         {exerciseLogs.map((exLog, exIdx) => {
           const isCollapsed = collapsedMap[exIdx] !== false; // Collapsed by default!
+          const isSkipped = Boolean(skippedMap[exIdx]);
           const completedSetsCount = exLog.sets.filter((s) => s.completed).length;
-          const isExDone = completedSetsCount >= Math.min(3, exLog.sets.length);
+          const isExDone = !isSkipped && completedSetsCount >= Math.min(3, exLog.sets.length);
 
-          // Find the active exercise (the first non-completed exercise in sequence)
+          // Find the active exercise (the first non-completed & non-skipped exercise in sequence)
           const firstIncompleteIdx = exerciseLogs.findIndex(
-            (el) => el.sets.filter((s) => s.completed).length < Math.min(3, el.sets.length)
+            (el, idx) => !skippedMap[idx] && el.sets.filter((s) => s.completed).length < Math.min(3, el.sets.length)
           );
 
-          const isCurrentActive = !isExDone && (firstIncompleteIdx === exIdx || !isCollapsed);
-          const isUpcoming = !isExDone && !isCurrentActive;
+          const isCurrentActive = !isExDone && !isSkipped && (firstIncompleteIdx === exIdx || !isCollapsed);
+          const isUpcoming = !isExDone && !isSkipped && !isCurrentActive;
 
           let themeBorder = 'border border-slate-800 bg-slate-950/50 opacity-60';
 
-          if (isExDone) {
+          if (isSkipped) {
+            themeBorder =
+              'border-l-4 border-l-slate-600 border-t border-r border-b border-slate-800 bg-slate-950/40 opacity-70';
+          } else if (isExDone) {
             themeBorder =
               'border-2 border-emerald-500/50 bg-gradient-to-br from-slate-950 via-emerald-950/30 to-slate-950 shadow-lg shadow-emerald-500/10 opacity-90';
           } else if (isCurrentActive) {
@@ -670,7 +717,9 @@ export const LiveWorkout: React.FC = () => {
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span
                         className={`rounded-xl px-2.5 py-1 text-[11px] font-black uppercase font-condensed tracking-wider shadow-md ${
-                          isExDone
+                          isSkipped
+                            ? 'bg-slate-800 text-slate-400'
+                            : isExDone
                             ? 'bg-emerald-400 text-slate-950'
                             : isCurrentActive
                             ? 'bg-amber-400 text-slate-950 animate-pulse'
@@ -680,7 +729,11 @@ export const LiveWorkout: React.FC = () => {
                         EX {exIdx + 1}/{exerciseLogs.length}
                       </span>
 
-                      {isExDone ? (
+                      {isSkipped ? (
+                        <span className="rounded-xl bg-slate-800/90 text-slate-400 border border-slate-700 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
+                          <FastForward className="h-3 w-3 text-slate-400" /> SKIPPED
+                        </span>
+                      ) : isExDone ? (
                         <span className="rounded-xl bg-emerald-500/30 text-emerald-300 border border-emerald-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase font-condensed tracking-wider flex items-center gap-1 shadow-sm">
                           <Check className="h-3 w-3 stroke-[3]" /> DONE
                         </span>
@@ -699,7 +752,9 @@ export const LiveWorkout: React.FC = () => {
                       </span>
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold border ${
-                          isExDone
+                          isSkipped
+                            ? 'bg-slate-900 text-slate-500 border-slate-800'
+                            : isExDone
                             ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                             : isCurrentActive
                             ? 'bg-amber-400/20 text-amber-300 border-amber-400/40 font-black'
@@ -716,10 +771,16 @@ export const LiveWorkout: React.FC = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleCollapse(exIdx);
+                        if (isSkipped) {
+                          handleUnskipExercise(exIdx, e);
+                        } else {
+                          toggleCollapse(exIdx);
+                        }
                       }}
                       className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border shrink-0 touch-manipulation min-h-[36px] apple-press ${
-                        isExDone && isCollapsed
+                        isSkipped
+                          ? 'bg-slate-800 text-amber-400 border-slate-700 font-bold'
+                          : isExDone && isCollapsed
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-black'
                           : isCurrentActive && isCollapsed
                           ? 'bg-amber-400 text-slate-950 font-black border-amber-300 shadow-md shadow-amber-500/20'
@@ -727,11 +788,20 @@ export const LiveWorkout: React.FC = () => {
                       }`}
                     >
                       <span className="text-[10px] font-black uppercase font-condensed">
-                        {isCollapsed ? (isExDone ? '✓ DONE' : isCurrentActive ? '▶ LOG NOW' : 'TAP TO LOG') : 'CLOSE'}
+                        {isSkipped
+                          ? '↺ UNSKIP'
+                          : isCollapsed
+                          ? isExDone
+                            ? '✓ DONE'
+                            : isCurrentActive
+                            ? '▶ LOG NOW'
+                            : 'TAP TO LOG'
+                          : 'CLOSE'}
                       </span>
                       {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
                     </button>
                   </div>
+
 
                   {/* Exercise Title & Inline Rename Option */}
                   {renamingExIdx === exIdx ? (
@@ -966,10 +1036,20 @@ export const LiveWorkout: React.FC = () => {
                       </div>
                     )}
 
+                    {/* SKIP THIS EXERCISE BUTTON (For when short on time) */}
+                    <button
+                      onClick={() => handleSkipExercise(exIdx)}
+                      className="w-full py-2.5 rounded-2xl bg-slate-900/90 text-slate-400 hover:text-amber-400 active:bg-slate-800 border border-slate-800 font-extrabold uppercase font-condensed tracking-wider text-xs flex items-center justify-center gap-2 mt-2 transition touch-manipulation apple-press"
+                    >
+                      <FastForward className="h-4 w-4 text-slate-400" />
+                      <span>SKIP THIS EXERCISE (SHORT ON TIME) →</span>
+                    </button>
+
                   </div>
                 )}
               </div>
             </div>
+
           );
         })}
 
