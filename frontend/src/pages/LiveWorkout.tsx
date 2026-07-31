@@ -27,6 +27,9 @@ import { RestTimerWidget } from '../components/RestTimerWidget';
 import { saveCustomExerciseName } from '../utils/exerciseRenamer';
 import { getCustomCycleDays } from '../utils/cycleCustomizer';
 import { markDayCompleted } from '../utils/cycleCompletion';
+import { PlateCalculatorModal } from '../components/PlateCalculatorModal';
+import { Disc } from 'lucide-react';
+
 
 import { triggerHaptic } from '../utils/haptics';
 
@@ -98,6 +101,11 @@ export const LiveWorkout: React.FC = () => {
   // Exercise Swap State
   const [swapModalOpen, setSwapModalOpen] = useState<boolean>(false);
   const [swapTargetIndex, setSwapTargetIndex] = useState<number | null>(null);
+
+  // Plate Calculator Modal State
+  const [plateModalOpen, setPlateModalOpen] = useState<boolean>(false);
+  const [targetCalcWeight, setTargetCalcWeight] = useState<number>(100);
+
 
   // Summary Celebration Modal
   const [summaryData, setSummaryData] = useState<{
@@ -529,6 +537,19 @@ export const LiveWorkout: React.FC = () => {
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => {
+                triggerHaptic('light');
+                setTargetCalcWeight(100);
+                setPlateModalOpen(true);
+              }}
+              className="flex items-center gap-1 rounded-xl bg-amber-400/10 border border-amber-400/40 px-2.5 py-1.5 text-[11px] font-black text-amber-400 uppercase font-condensed tracking-wider active:scale-95 transition shadow-sm"
+              title="Barbell Plate Loader & Warmup Calculator"
+            >
+              <Disc className="h-3.5 w-3.5" />
+              <span>Plates</span>
+            </button>
+
+            <button
+              onClick={() => {
                 const allCollapsed = exerciseLogs.every((_, idx) => collapsedMap[idx] !== false);
                 if (allCollapsed) expandAllExercises();
                 else collapseAllExercises();
@@ -538,6 +559,7 @@ export const LiveWorkout: React.FC = () => {
             >
               <span>{exerciseLogs.every((_, idx) => collapsedMap[idx] !== false) ? 'Expand All' : 'Collapse All'}</span>
             </button>
+
 
             <button
               onClick={toggleWorkoutTimer}
@@ -923,6 +945,14 @@ export const LiveWorkout: React.FC = () => {
         </div>
       )}
 
+      {/* PLATE CALCULATOR MODAL */}
+      <PlateCalculatorModal
+        isOpen={plateModalOpen}
+        onClose={() => setPlateModalOpen(false)}
+        initialWeightKg={targetCalcWeight}
+      />
     </div>
   );
 };
+
+

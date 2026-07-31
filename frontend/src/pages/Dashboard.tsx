@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dumbbell, Trophy, Zap, Target, Flame, Activity } from 'lucide-react';
-import { AnalyticsSummary, VolumeMatrixEntry } from '../types';
+import { AnalyticsSummary, VolumeMatrixEntry, WorkoutLog } from '../types';
 import { api } from '../services/api';
 import { VolumeMatrixCard } from '../components/VolumeMatrixCard';
 import { WeeklyScheduleCard } from '../components/WeeklyScheduleCard';
+import { PRHallOfFameCard } from '../components/PRHallOfFameCard';
 import { useAuthContext } from '../context/AuthContext';
 
 export const Dashboard: React.FC = () => {
@@ -12,14 +13,16 @@ export const Dashboard: React.FC = () => {
   const { user } = useAuthContext();
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [volumeMatrix, setVolumeMatrix] = useState<VolumeMatrixEntry[]>([]);
+  const [workoutLogs, setWorkoutLogs] = useState<WorkoutLog[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = () => {
     setLoading(true);
-    Promise.all([api.getAnalyticsSummary(), api.getVolumeMatrix()])
-      .then(([sData, vData]) => {
+    Promise.all([api.getAnalyticsSummary(), api.getVolumeMatrix(), api.getWorkouts(user?.uid)])
+      .then(([sData, vData, wLogs]) => {
         setSummary(sData);
         setVolumeMatrix(vData);
+        setWorkoutLogs(wLogs || []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -45,12 +48,13 @@ export const Dashboard: React.FC = () => {
       {/* Full-Screen Prominent 7-Day Workout Progression Schedule */}
       <WeeklyScheduleCard />
 
+      {/* PR Hall of Fame Card */}
+      <PRHallOfFameCard workoutLogs={workoutLogs} />
+
       {/* 7-Day Muscle Volume Target Matrix with RESET Button */}
       <VolumeMatrixCard matrix={volumeMatrix} loading={loading} onResetVolume={handleResetVolume} />
     </div>
   );
-
-
 };
 
 export default Dashboard;
