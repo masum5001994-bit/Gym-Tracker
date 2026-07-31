@@ -984,9 +984,9 @@ export const LiveWorkout: React.FC = () => {
                             {/* Checkmark Completion Button */}
                             <button
                               onClick={() => handleToggleSet(exIdx, setIdx)}
-                              className={`flex h-9 w-10 items-center justify-center rounded-xl border font-black transition-all touch-manipulation active:scale-95 shrink-0 min-h-[38px] ${
+                              className={`flex h-9 w-10 items-center justify-center rounded-xl border font-black transition-all apple-press shrink-0 min-h-[38px] ${
                                 set.completed
-                                  ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-slate-100 border-blue-400 shadow-md'
+                                  ? 'bg-lime-400 text-slate-950 border-lime-300 shadow-md shadow-lime-400/30 scale-105'
                                   : 'bg-slate-900 border-slate-800 text-slate-500 active:bg-slate-800'
                               }`}
                             >
@@ -1010,18 +1010,19 @@ export const LiveWorkout: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2 pt-1">
                       <button
                         onClick={() => handleAddSet(exIdx)}
-                        className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2 text-xs font-bold text-slate-300 active:bg-slate-800 border border-slate-800 transition touch-manipulation min-h-[38px]"
+                        className="flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 py-2 text-xs font-bold text-slate-300 border border-slate-800 transition apple-press min-h-[38px]"
                       >
-                        <Plus className="h-3.5 w-3.5 text-blue-400" /> Add Extra Set
+                        <Plus className="h-3.5 w-3.5 text-lime-400" /> Add Extra Set
                       </button>
 
                       <button
                         onClick={() => restTimer.startTimer(exLog.restSeconds || 120, exLog.exerciseName)}
-                        className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600/20 py-2 text-xs font-extrabold text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 active:scale-95 transition touch-manipulation min-h-[38px]"
+                        className="flex items-center justify-center gap-1.5 rounded-xl bg-cyan-400/10 py-2 text-xs font-extrabold text-cyan-400 border border-cyan-400/30 hover:bg-cyan-400/20 transition apple-press min-h-[38px]"
                       >
-                        <Timer className="h-3.5 w-3.5 text-amber-400" /> Rest ({exLog.restSeconds || 120}s)
+                        <Timer className="h-3.5 w-3.5 text-lime-400" /> Rest ({exLog.restSeconds || 120}s)
                       </button>
                     </div>
+
 
                     {/* DONE WITH EXERCISE BUTTON - Unlocks when 3 sets (or all sets) are completed */}
                     {completedSetsCount >= Math.min(3, exLog.sets.length) ? (
