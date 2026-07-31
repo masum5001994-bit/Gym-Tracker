@@ -302,13 +302,16 @@ export const LiveWorkout: React.FC = () => {
     const isNowCompleted = !targetSet.completed;
     targetSet.completed = isNowCompleted;
 
-    triggerHaptic(isNowCompleted ? 'success' : 'light');
-
     setExerciseLogs(updated);
+    if (routine) {
+      api.syncSetToDatabase(routine.id, updated, user?.uid);
+    }
+
     if (!isTimerRunning) {
       setIsTimerRunning(true);
     }
   };
+
 
   const handleUpdateSet = (
     exIndex: number,

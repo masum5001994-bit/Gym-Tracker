@@ -12,7 +12,10 @@ import {
   ExerciseHistoryPoint,
   AnalyticsSummary,
   UserProfile,
+  LiveExerciseLog,
 } from '../types';
+import { prepareActiveDraftPayload } from './setSync';
+
 
 const API_BASE = '/api';
 const LOCAL_STORAGE_WORKOUTS_KEY = 'bws_gym_tracker_workouts_v1';
@@ -894,6 +897,35 @@ export const api = {
       console.warn('Firestore restore error:', e);
     }
   },
+
+  syncSetToDatabase: async (routineId: string, logs: LiveExerciseLog[], userId?: string): Promise<void> => {
+    const uid = api.getCentralUserId(userId);
+    const payload = prepareActiveDraftPayload(routineId, logs);
+
+    try {
+      localStorage.setItem(`bws_active_draft_${uid}_${routineId}`, JSON.stringify(payload));
+    } catch (e) {}
+
+    // Non-blocking real-time push to Google Cloud Firestore active_drafts
+    setTimeout(async () => {
+      try {
+        const docRef = doc(db, 'users', uid, 'active_drafts', routineId);
+        await setDoc(docRef, payload, { merge: true });
+      } catch (e) {
+        console.warn('Realtime set cloud sync note:', e);
+      }
+    }, 0);
+  },
+
+  clearActiveDraft: async (routineId: string, userId?: string): Promise<void> => {
+    const uid = api.getCentralUserId(userId);
+    try {
+      localStorage.removeItem(`bws_active_draft_${uid}_${routineId}`);
+      const docRef = doc(db, 'users', uid, 'active_drafts', routineId);
+      await setDoc(docRef, { deleted: true }, { merge: true });
+    } catch (e) {}
+  },
+
 
 
 
