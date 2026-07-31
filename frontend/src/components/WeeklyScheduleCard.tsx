@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Moon, Play, AlertCircle, RotateCcw, Edit3, Dumbbell, CheckCircle2 } from 'lucide-react';
+import { Calendar, Moon, Play, AlertCircle, RotateCcw, Edit3, CheckCircle2 } from 'lucide-react';
+
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { WorkoutLog } from '../types';
@@ -10,8 +11,8 @@ import {
   getCompletedDayNums,
   getCycleWeekNumber,
   resetCycleCompletion,
-  unmarkDayCompleted,
 } from '../utils/cycleCompletion';
+
 
 const REST_DAY_THEME = {
   bg: 'bg-gradient-to-br from-indigo-950/90 via-slate-900 to-indigo-950/40',
