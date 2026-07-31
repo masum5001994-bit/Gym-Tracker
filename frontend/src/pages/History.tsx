@@ -104,17 +104,33 @@ export const History: React.FC = () => {
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              triggerHaptic('light');
-              fetchHistory();
-            }}
-            className="flex items-center gap-1.5 text-xs font-black text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 px-3.5 py-2 rounded-xl border border-cyan-500/30 uppercase tracking-wider font-condensed transition apple-press shadow-sm"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>Refresh Logs</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                triggerHaptic('medium');
+                await api.restoreAllWorkouts(user?.uid);
+                fetchHistory();
+              }}
+              className="flex items-center gap-1.5 text-xs font-black text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-2 rounded-xl border border-amber-500/30 uppercase tracking-wider font-condensed transition apple-press shadow-sm"
+              title="Restore previous workouts if accidentally cleared"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Restore Logs</span>
+            </button>
+
+            <button
+              onClick={() => {
+                triggerHaptic('light');
+                fetchHistory();
+              }}
+              className="flex items-center gap-1.5 text-xs font-black text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 px-3.5 py-2 rounded-xl border border-cyan-500/30 uppercase tracking-wider font-condensed transition apple-press shadow-sm"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>Refresh</span>
+            </button>
+          </div>
         </div>
+
 
         {/* ACCOUNT LIFETIME STATS METRICS */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">

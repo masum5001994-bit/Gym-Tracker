@@ -881,6 +881,21 @@ export const api = {
     }
   },
 
+  restoreAllWorkouts: async (userId?: string): Promise<void> => {
+    const uid = api.getCentralUserId(userId);
+    try {
+      const q = query(collection(db, 'users', uid, 'workouts'));
+      const snap = await getDocs(q);
+      const restorePromises = snap.docs.map((docSnap) =>
+        setDoc(doc(db, 'users', uid, 'workouts', docSnap.id), { deleted: false }, { merge: true })
+      );
+      await Promise.all(restorePromises);
+    } catch (e) {
+      console.warn('Firestore restore error:', e);
+    }
+  },
+
+
 
 
   // Volume Matrix (0 sets by default, dynamically populated from last 7 days of logged workouts)
