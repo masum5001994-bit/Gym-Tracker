@@ -534,8 +534,9 @@ export const LiveWorkout: React.FC = () => {
 
 
     try {
-      const savedLog = await api.saveWorkout(payload);
+      const savedLog = await api.saveWorkout(payload, user?.email || user?.uid);
       try {
+
         localStorage.removeItem(SESSION_KEY);
       } catch (e) {}
 

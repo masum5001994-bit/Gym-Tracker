@@ -687,7 +687,9 @@ export const api = {
     return FALLBACK_EXERCISES.find((e) => e.id === id) || FALLBACK_EXERCISES[0];
   },
 
-  getExerciseHistory: async (id: string): Promise<ExerciseHistoryResponse> => {
+
+  getExerciseHistory: async (id: string, userId?: string): Promise<ExerciseHistoryResponse> => {
+
     try {
       const res = await axios.get(`${API_BASE}/exercises/${id}/history`, { timeout: 800 });
       if (res.data && Array.isArray(res.data.history) && res.data.history.length > 0) return res.data;
@@ -695,7 +697,7 @@ export const api = {
       // Fallback
     }
 
-    const workouts = await api.getWorkouts();
+    const workouts = await api.getWorkouts(userId);
     let maxWeightKg = 0;
     let maxEstimated1RM = 0;
 
@@ -746,10 +748,17 @@ export const api = {
     };
   },
 
-  // Central Database User ID Resolver
+  // Central Database User ID & Email Resolver
   getCentralUserId: (userId?: string): string => {
-    if (userId) return userId;
-    if (auth.currentUser?.uid) return auth.currentUser.uid;
+    if (userId && userId.trim()) {
+      return userId.includes('@') ? userId.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_') : userId;
+    }
+    if (auth.currentUser?.email) {
+      return auth.currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_');
+    }
+    if (auth.currentUser?.uid) {
+      return auth.currentUser.uid;
+    }
     let deviceUid = localStorage.getItem('bws_central_user_id');
     if (!deviceUid) {
       deviceUid = `central-user-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -757,6 +766,7 @@ export const api = {
     }
     return deviceUid;
   },
+
 
   // Central Database Workouts API (Instant 0ms Load + Non-Blocking Cloud Sync)
   getWorkouts: async (userId?: string): Promise<WorkoutLog[]> => {
