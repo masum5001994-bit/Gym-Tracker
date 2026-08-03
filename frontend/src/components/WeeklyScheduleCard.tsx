@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Moon, Play, AlertCircle, RotateCcw, Edit3, CheckCircle2 } from 'lucide-react';
-
+import { Calendar, Moon, Play, AlertCircle, RotateCcw, Edit3, CheckCircle2, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { WorkoutLog } from '../types';
@@ -12,6 +11,8 @@ import {
   getCycleWeekNumber,
   resetCycleCompletion,
 } from '../utils/cycleCompletion';
+import { AdaptiveRecoveryModal } from './AdaptiveRecoveryModal';
+
 
 
 const REST_DAY_THEME = {
@@ -84,6 +85,8 @@ export const WeeklyScheduleCard: React.FC = () => {
   const [cycleDays, setCycleDays] = useState<CustomCycleDay[]>(getCustomCycleDays());
   const [completedDayNums, setCompletedDayNums] = useState<number[]>(getCompletedDayNums());
   const [weekNumber, setWeekNumber] = useState<number>(getCycleWeekNumber());
+  const [adaptiveModalOpen, setAdaptiveModalOpen] = useState<boolean>(false);
+
 
   const fetchLogs = () => {
     api
@@ -190,28 +193,51 @@ export const WeeklyScheduleCard: React.FC = () => {
         </div>
       </div>
 
-      {/* Missed Day Alert */}
+      {/* Missed Day Alert & Adaptive Science Coach Banner */}
       {isMissed && (
-        <div className="p-3.5 rounded-2xl bg-rose-500/20 border border-rose-500/50 text-rose-400 flex items-center justify-between gap-3 shadow-lg">
+        <div className="p-3.5 rounded-2xl bg-amber-400/10 border border-amber-400/40 text-gym-text flex items-center justify-between gap-3 shadow-lg flex-wrap sm:flex-nowrap">
           <div className="flex items-center gap-2.5 min-w-0">
-            <AlertCircle className="h-5 w-5 text-rose-400 shrink-0" />
+            <AlertCircle className="h-5 w-5 text-amber-400 shrink-0" />
             <span className="text-xs sm:text-sm font-bold truncate">
               {daysSinceLastWorkout} days idle! Next: <strong className="underline text-gym-secondary">{activeDay.title}</strong>.
             </span>
           </div>
-          {activeDay.type === 'workout' && (
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
             <button
               onClick={() => {
                 triggerHaptic('medium');
-                navigate(`/workout/${activeDay.routineId || 'custom-session'}`);
+                setAdaptiveModalOpen(true);
               }}
-              className="rounded-xl bg-rose-500 text-slate-950 px-3.5 py-1.5 text-xs font-black uppercase tracking-wider shrink-0 apple-press shadow-md"
+              className="flex items-center gap-1 rounded-xl bg-gym-primary text-slate-950 px-3 py-1.5 text-xs font-black uppercase tracking-wider apple-press shadow-md font-condensed border border-gym-primary"
             >
-              Resume
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Science Coach</span>
             </button>
-          )}
+
+            {activeDay.type === 'workout' && (
+              <button
+                onClick={() => {
+                  triggerHaptic('medium');
+                  navigate(`/workout/${activeDay.routineId || 'custom-session'}`);
+                }}
+                className="rounded-xl bg-gym-card text-gym-text hover:bg-gym-border px-3 py-1.5 text-xs font-black uppercase tracking-wider border border-gym-border apple-press"
+              >
+                Resume
+              </button>
+            )}
+          </div>
         </div>
       )}
+
+      {/* Adaptive Recovery Science Coach Modal */}
+      <AdaptiveRecoveryModal
+        isOpen={adaptiveModalOpen}
+        onClose={() => setAdaptiveModalOpen(false)}
+        daysIdle={daysSinceLastWorkout}
+        activeDayTitle={activeDay.title}
+        routineId={activeDay.routineId || 'custom-session'}
+      />
+
 
       {/* CARDS VIEW FOR ALL DAYS */}
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4">

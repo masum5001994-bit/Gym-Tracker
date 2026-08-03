@@ -19,7 +19,9 @@ import {
   ChevronUp,
   Edit3,
   FastForward,
+  ShieldCheck,
 } from 'lucide-react';
+
 
 import { Routine, LiveExerciseLog, LiveSetLog, Exercise } from '../types';
 import { api } from '../services/api';
@@ -580,9 +582,31 @@ export const LiveWorkout: React.FC = () => {
 
   return (
     <div className="w-full max-w-full overflow-x-hidden space-y-4 pb-36">
+      {/* 80% Smart Ramp-Back Mode Active Banner */}
+      {sessionStorage.getItem('bws_ramp_back_mode') === 'true' && (
+        <div className="w-full rounded-2xl bg-amber-400/15 border border-amber-400/50 p-3 flex items-center justify-between gap-2.5 text-amber-300 mb-2 animate-fade-in shadow-md">
+          <div className="flex items-center gap-2 text-xs sm:text-sm font-bold">
+            <ShieldCheck className="h-5 w-5 text-amber-400 shrink-0" />
+            <span>
+              <strong>🛡️ Smart Ramp-Back Mode Active:</strong> Target 2–3 Reps in Reserve (RIR) to prevent extreme soreness and protect connective tissue.
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              sessionStorage.removeItem('bws_ramp_back_mode');
+              triggerHaptic('light');
+              window.location.reload();
+            }}
+            className="text-[10px] font-black uppercase font-mono px-2.5 py-1 bg-amber-400 text-slate-950 rounded-lg shrink-0 shadow-sm"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Top Session Header Banner (Normal flow - Guaranteed ZERO overlap with Exercise 1) */}
       <div className="w-full rounded-2xl glass-panel p-3.5 sm:p-4 shadow-xl border border-blue-500/30 bg-slate-950/90 mb-5">
+
         <div className="flex items-center justify-between gap-2.5">
           <div className="flex items-center gap-2.5 min-w-0">
             <button
