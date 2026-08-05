@@ -44,17 +44,21 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 pb-24 max-w-4xl mx-auto w-full px-1">
-      {/* Full-Screen Prominent 7-Day Workout Progression Schedule */}
+    <div className="space-y-8 pb-28 max-w-7xl mx-auto w-full px-3 sm:px-6">
+      {/* Primary Hero Section: 7-Day Workout Schedule */}
       <WeeklyScheduleCard />
 
-      {/* PR Hall of Fame Card */}
-      <PRHallOfFameCard workoutLogs={workoutLogs} />
+      {/* 2-Column Bento Grid for Records and Volume Matrix */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* PR Hall of Fame Card */}
+        <PRHallOfFameCard workoutLogs={workoutLogs} />
 
-      {/* 7-Day Muscle Volume Target Matrix with RESET Button */}
-      <VolumeMatrixCard matrix={volumeMatrix} loading={loading} onResetVolume={handleResetVolume} />
+        {/* 7-Day Muscle Volume Target Matrix */}
+        <VolumeMatrixCard matrix={volumeMatrix} loading={loading} onResetVolume={handleResetVolume} />
+      </div>
     </div>
   );
 };
+
 
 export default Dashboard;

@@ -6,7 +6,11 @@ export type ThemeId =
   | 'cyber-violet'
   | 'vapor-neon'
   | 'nordic-sage'
-  | 'clean-light';
+  | 'clean-light'
+  | 'titanium-sunset'
+  | 'hyper-emerald'
+  | 'supernova-magenta'
+  | 'monochrome-luxe';
 
 export interface ThemeScheme {
   id: ThemeId;
@@ -129,5 +133,58 @@ export const THEME_SCHEMES: ThemeScheme[] = [
     border: '#CBD5E1',
     isLight: true,
   },
+  {
+    id: 'titanium-sunset',
+    name: 'Titanium Sunset',
+    tagline: 'Apple Watch Ultra Pro',
+    bestFor: 'Laser orange accents with dark specular titanium glass.',
+    primary: '#FF5E00',
+    secondary: '#FFD000',
+    bg: '#0B0E14',
+    card: '#141923',
+    text: '#F8FAFC',
+    muted: '#94A3B8',
+    border: '#222D3D',
+  },
+  {
+    id: 'hyper-emerald',
+    name: 'Hyper Emerald',
+    tagline: 'Cyber Gym 2077',
+    bestFor: 'Vibrant emerald green highlights on deep cyber obsidian.',
+    primary: '#10B981',
+    secondary: '#06B6D4',
+    bg: '#030F0E',
+    card: '#0B1C1A',
+    text: '#F0FDF4',
+    muted: '#6EE7B7',
+    border: '#173833',
+  },
+  {
+    id: 'supernova-magenta',
+    name: 'Supernova Magenta',
+    tagline: 'Venom High-Energy',
+    bestFor: 'Hot crimson-magenta glow on deep midnight velvet.',
+    primary: '#F43F5E',
+    secondary: '#A855F7',
+    bg: '#100713',
+    card: '#1D0F24',
+    text: '#FFF1F2',
+    muted: '#F472B6',
+    border: '#361D42',
+  },
+  {
+    id: 'monochrome-luxe',
+    name: 'Monochrome Luxe',
+    tagline: 'Studio Carbon',
+    bestFor: 'Brushed platinum silver accents on absolute pitch black.',
+    primary: '#E2E8F0',
+    secondary: '#94A3B8',
+    bg: '#030303',
+    card: '#121212',
+    text: '#FFFFFF',
+    muted: '#A1A1AA',
+    border: '#262626',
+  },
 ];
+
 

@@ -27,12 +27,22 @@
   }
 }
 
-/* Apple Watch Fitness Ultra Glassmorphism Tokens */
+/* Apple Watch Fitness Ultra Glassmorphism Tokens & Impeccable Specular Highlights */
 .glass-panel {
   background: var(--color-card);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--color-border);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+}
+
+.glass-panel-impeccable {
+  background: var(--color-card);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid var(--color-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
@@ -40,12 +50,14 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border);
-  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .glass-card:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.45);
 }
 
 .bg-gym-primary {
@@ -96,11 +108,6 @@
   text-shadow: 0 0 16px var(--color-primary);
 }
 
-
-
-
-
-
 /* Pulse animation for rest timer */
 @keyframes ringPulse {
   0%, 100% {
@@ -127,21 +134,22 @@
 /* Instant 1:1 Touch Response (Kill Latency) */
 .apple-press {
   touch-action: manipulation;
-  transition: transform 75ms cubic-bezier(0.32, 0.72, 0, 1), opacity 75ms ease-out;
+  transition: transform 100ms cubic-bezier(0.32, 0.72, 0, 1), opacity 100ms ease-out, box-shadow 100ms ease;
 }
 
 .apple-press:active {
   transform: scale(0.96);
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 /* Apple Floating Translucent Chrome (Navbar & Tab Bar) */
 .apple-glass-chrome {
-  background: rgba(7, 12, 24, 0.82);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+  background: var(--color-card);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-bottom: 1px solid var(--color-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
 }
 
 /* Apple Display Typography (Optical Negative Tracking) */
@@ -164,4 +172,5 @@
     animation: none !important;
   }
 }
+
 

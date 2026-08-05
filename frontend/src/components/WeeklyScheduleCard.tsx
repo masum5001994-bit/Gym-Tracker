@@ -142,7 +142,8 @@ export const WeeklyScheduleCard: React.FC = () => {
   let workoutDayCounter = 0;
 
   return (
-    <div className="w-full rounded-3xl glass-panel p-4 sm:p-6 border border-gym-border shadow-2xl space-y-6 bg-gym-card text-gym-text">
+    <div className="w-full rounded-3xl glass-panel-impeccable p-4 sm:p-6 border border-gym-border shadow-2xl space-y-6 text-gym-text">
+
       {/* HERO TEXT HEADER */}
       <div className="space-y-2 border-b border-gym-border pb-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -370,7 +371,6 @@ export const WeeklyScheduleCard: React.FC = () => {
     </div>
   );
 };
-
 
 
 
