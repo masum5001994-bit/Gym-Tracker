@@ -42,13 +42,15 @@ const AppContent: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    if (user?.uid) {
+    if (!authLoading) {
+      const userKey = user?.email || user?.uid;
       api
-        .getUserProfile(user.uid)
+        .getUserProfile(userKey)
         .then(setUserProfile)
         .catch(console.error);
     }
-  }, [user]);
+  }, [user, authLoading]);
+
 
   if (authLoading) {
     return (

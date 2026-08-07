@@ -1023,12 +1023,12 @@ export const api = {
 
   // User Profile
   getUserProfile: async (userId?: string): Promise<UserProfile> => {
-    const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
+    const uid = api.getCentralUserId(userId);
     const PROFILE_KEY = `bws_user_profile_${uid}`;
 
     let localProfile: UserProfile = {
       id: uid,
-      name: auth.currentUser?.displayName || '',
+      name: auth.currentUser?.displayName || (auth.currentUser?.email ? auth.currentUser.email.split('@')[0] : ''),
       currentWeightKg: 75.0,
       targetWeightKg: 70.0,
       heightCm: 175,
@@ -1040,33 +1040,56 @@ export const api = {
 
     try {
       const raw = localStorage.getItem(PROFILE_KEY);
-      if (raw) localProfile = JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          localProfile = { ...localProfile, ...parsed };
+        }
+      }
     } catch (e) {}
 
-    // Firestore background sync
-    setTimeout(async () => {
-      try {
-        const docRef = doc(db, 'users', uid, 'profile', 'main');
-        const snap = await getDoc(docRef);
-        if (snap.exists()) {
-          const remoteData = snap.data() as UserProfile;
-          localStorage.setItem(PROFILE_KEY, JSON.stringify(remoteData));
+    // If local profile is already setup, return immediately and sync with cloud in background
+    if (localProfile.isProfileSetupCompleted && localProfile.name && localProfile.name.trim() !== '') {
+      setTimeout(async () => {
+        try {
+          const docRef = doc(db, 'users', uid, 'profile', 'main');
+          const snap = await getDoc(docRef);
+          if (snap.exists()) {
+            const remoteData = snap.data() as UserProfile;
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(remoteData));
+          }
+        } catch (e) {
+          console.warn('Firestore profile sync note:', e);
         }
-      } catch (e) {
-        console.warn('Firestore profile sync note:', e);
+      }, 0);
+      return localProfile;
+    }
+
+    // If profile is NOT setup locally (e.g. new browser/device or fresh login), AWAIT Firestore to check cloud profile bound to email
+    try {
+      const docRef = doc(db, 'users', uid, 'profile', 'main');
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const remoteData = snap.data() as UserProfile;
+        if (remoteData && remoteData.isProfileSetupCompleted && remoteData.name && remoteData.name.trim() !== '') {
+          localStorage.setItem(PROFILE_KEY, JSON.stringify(remoteData));
+          return remoteData;
+        }
       }
-    }, 0);
+    } catch (e) {
+      console.warn('Firestore profile cloud fetch note:', e);
+    }
 
     return localProfile;
   },
 
   saveUserProfile: async (profileUpdate: Partial<UserProfile>, userId?: string): Promise<UserProfile> => {
-    const uid = userId || auth.currentUser?.uid || localStorage.getItem('bws_device_user_id') || 'main_user';
+    const uid = api.getCentralUserId(userId);
     const PROFILE_KEY = `bws_user_profile_${uid}`;
 
     let currentProfile: UserProfile = {
       id: uid,
-      name: auth.currentUser?.displayName || '',
+      name: auth.currentUser?.displayName || (auth.currentUser?.email ? auth.currentUser.email.split('@')[0] : ''),
       currentWeightKg: 75.0,
       targetWeightKg: 70.0,
       heightCm: 175,
@@ -1095,17 +1118,16 @@ export const api = {
       localStorage.setItem(PROFILE_KEY, JSON.stringify(updatedProfile));
     } catch (e) {}
 
-    setTimeout(async () => {
-      try {
-        const docRef = doc(db, 'users', uid, 'profile', 'main');
-        await setDoc(docRef, updatedProfile, { merge: true });
-      } catch (e) {
-        console.warn('Firestore profile save note:', e);
-      }
-    }, 0);
+    try {
+      const docRef = doc(db, 'users', uid, 'profile', 'main');
+      await setDoc(docRef, updatedProfile, { merge: true });
+    } catch (e) {
+      console.warn('Firestore profile save note:', e);
+    }
 
     return updatedProfile;
   },
+
 
   // PR Hall of Fame
   getPRHallOfFame: async (): Promise<import('../types').PRHallOfFameEntry[]> => {
