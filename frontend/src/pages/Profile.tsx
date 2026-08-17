@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Scale, Target, Flame, Edit3, Save, X, Activity, LogOut, LogIn, Dumbbell, Calendar, RotateCcw, Plus, Trash2 } from 'lucide-react';
+import { User, Scale, Target, Flame, Edit3, Save, X, Activity, LogOut, LogIn, Dumbbell, Calendar, RotateCcw, Plus, Trash2, Search, Sliders } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { UserProfile } from '../types';
 import { api } from '../services/api';
@@ -7,6 +7,7 @@ import { useAuthContext } from '../context/AuthContext';
 import { AuthModal } from '../components/AuthModal';
 import { triggerHaptic } from '../utils/haptics';
 import { getCustomCycleDays, saveCustomCycleDays, resetCustomCycleDaysToDefault, CustomCycleDay } from '../utils/cycleCustomizer';
+import { getExerciseUnitPreference, saveExerciseUnitPreference, WeightUnit } from '../utils/unitConverter';
 
 export const Profile: React.FC = () => {
   const { user, logout } = useAuthContext();
@@ -21,6 +22,45 @@ export const Profile: React.FC = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editFocus, setEditFocus] = useState('');
   const [editExercises, setEditExercises] = useState<string[]>([]);
+  // Gym Equipment Manager State
+  const [unitSearch, setUnitSearch] = useState('');
+  const [unitPrefs, setUnitPrefs] = useState<Record<string, WeightUnit>>({});
+
+  const ALL_GYM_MACHINES = [
+    { id: 'ex-bench-press', name: 'Barbell Bench Press', category: 'Chest' },
+    { id: 'ex-db-chest-row', name: 'DB Chest Supported Row', category: 'Back' },
+    { id: 'ex-ohp', name: 'Standing Barbell OHP', category: 'Shoulders' },
+    { id: 'ex-lat-pulldown', name: 'Lat Pulldown Machine', category: 'Back' },
+    { id: 'ex-high-low-cable-fly', name: 'Standing High-to-Low Cable Flyes', category: 'Chest' },
+    { id: 'ex-incline-db-curls', name: 'Incline Dumbbell Curls', category: 'Biceps' },
+    { id: 'ex-barbell-squat', name: 'Barbell Squat', category: 'Quads' },
+    { id: 'ex-rdl', name: 'Romanian Deadlift', category: 'Hamstrings' },
+    { id: 'ex-leg-ext', name: 'Seated Leg Extension Machine', category: 'Quads' },
+    { id: 'ex-walking-lunges', name: 'Dumbbell Walking Lunges', category: 'Legs' },
+    { id: 'ex-calf-raises', name: 'Standing Calf Raise Machine', category: 'Calves' },
+    { id: 'ex-incline-db-press', name: 'Incline Dumbbell Press', category: 'Chest' },
+    { id: 'ex-cable-seated-row', name: 'Seated Cable Row Machine', category: 'Back' },
+    { id: 'ex-lat-raises', name: 'Dumbbell Lateral Raises', category: 'Shoulders' },
+    { id: 'ex-tricep-pushdown', name: 'Cable Triceps Pushdown', category: 'Triceps' },
+    { id: 'ex-leg-press', name: 'Leg Press Machine', category: 'Quads' },
+    { id: 'ex-lying-leg-curl', name: 'Lying Leg Curl Machine', category: 'Hamstrings' },
+  ];
+
+  useEffect(() => {
+    const initialPrefs: Record<string, WeightUnit> = {};
+    ALL_GYM_MACHINES.forEach((m) => {
+      initialPrefs[m.id] = getExerciseUnitPreference(m.id);
+    });
+    setUnitPrefs(initialPrefs);
+  }, []);
+
+  const handleToggleMachineUnit = (mId: string) => {
+    triggerHaptic('light');
+    const current = unitPrefs[mId] || 'kg';
+    const next: WeightUnit = current === 'kg' ? 'lbs' : 'kg';
+    saveExerciseUnitPreference(mId, next);
+    setUnitPrefs((prev) => ({ ...prev, [mId]: next }));
+  };
 
 
   // Form State
@@ -452,6 +492,71 @@ export const Profile: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* NEW: GYM EQUIPMENT & MACHINE UNIT MANAGER CARD */}
+      <div className="rounded-3xl glass-panel p-5 border border-cyan-500/40 shadow-xl space-y-4 bg-slate-900/90">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-400/20 text-cyan-400 border border-cyan-400/30">
+              <Sliders className="h-5 w-5 stroke-[2.5]" />
+            </div>
+            <div>
+              <h2 className="text-sm font-black uppercase tracking-wider text-slate-100 font-condensed apple-display-title">
+                GYM EQUIPMENT & MACHINE UNIT MANAGER
+              </h2>
+              <p className="text-[10px] text-cyan-400 font-semibold">Pre-set KG vs LBS per machine for your gym</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="h-4 w-4 absolute left-3 top-3 text-slate-500" />
+          <input
+            type="text"
+            value={unitSearch}
+            onChange={(e) => setUnitSearch(e.target.value)}
+            placeholder="Search gym machine or exercise..."
+            className="w-full text-xs font-bold text-slate-100 bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2.5 focus:border-cyan-400 focus:outline-none"
+          />
+        </div>
+
+        {/* Machines Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto pr-1">
+          {ALL_GYM_MACHINES.filter((m) =>
+            m.name.toLowerCase().includes(unitSearch.toLowerCase()) ||
+            m.category.toLowerCase().includes(unitSearch.toLowerCase())
+          ).map((m) => {
+            const activeUnit = unitPrefs[m.id] || 'kg';
+            return (
+              <div
+                key={m.id}
+                className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between gap-2 shadow-sm"
+              >
+                <div className="min-w-0">
+                  <span className="text-[9px] font-black uppercase text-slate-500 font-mono block truncate">
+                    {m.category}
+                  </span>
+                  <span className="text-xs font-black text-slate-100 font-condensed truncate block">
+                    {m.name}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => handleToggleMachineUnit(m.id)}
+                  className="flex items-center gap-1 px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono font-black text-amber-400 uppercase tracking-wider apple-press shrink-0 hover:border-amber-400/50"
+                  title="Toggle unit preference between KG and LBS"
+                >
+                  <span className="text-[10px] text-slate-400">UNIT:</span>
+                  <span className="bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-extrabold">
+                    {activeUnit.toUpperCase()}
+                  </span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* iOS Health Style Progress Gauge Card */}
       <div className="rounded-3xl glass-panel p-5 shadow-xl border border-blue-900/60 space-y-3">

@@ -66,9 +66,14 @@ const AppContent: React.FC = () => {
     return <AuthScreen />;
   }
 
+  const userKey = user?.email || user?.uid || '';
+  const isDismissedLocally = localStorage.getItem(`bws_onboarding_dismissed_${userKey}`) === 'true';
+
   const needsOnboarding =
+    !isDismissedLocally &&
+    !user?.email &&
     Boolean(userProfile) &&
-    (!userProfile?.isProfileSetupCompleted || !userProfile?.name || userProfile?.name.trim() === '');
+    userProfile?.isProfileSetupCompleted === false;
 
   return (
     <BrowserRouter>
@@ -90,6 +95,9 @@ const AppContent: React.FC = () => {
         {needsOnboarding && (
           <OnboardingModal
             onComplete={(updatedProfile) => {
+              if (userKey) {
+                localStorage.setItem(`bws_onboarding_dismissed_${userKey}`, 'true');
+              }
               setUserProfile(updatedProfile);
             }}
           />

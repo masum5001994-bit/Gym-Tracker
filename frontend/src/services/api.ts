@@ -750,15 +750,19 @@ export const api = {
 
   // Central Database User ID & Email Resolver
   getCentralUserId: (userId?: string): string => {
-    if (userId && userId.trim()) {
-      return userId.includes('@') ? userId.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_') : userId;
-    }
-    if (auth.currentUser?.email) {
-      return auth.currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_');
-    }
+    // 1. If Firebase Auth UID is present, use it as primary key
     if (auth.currentUser?.uid) {
       return auth.currentUser.uid;
     }
+    // 2. If Firebase Auth email exists, use sanitized email
+    if (auth.currentUser?.email) {
+      return auth.currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_');
+    }
+    // 3. If explicit parameter passed is an email or UID
+    if (userId && userId.trim()) {
+      return userId.includes('@') ? userId.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_') : userId;
+    }
+    // 4. Fallback to local device ID for pre-login session
     let deviceUid = localStorage.getItem('bws_central_user_id');
     if (!deviceUid) {
       deviceUid = `central-user-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -767,47 +771,115 @@ export const api = {
     return deviceUid;
   },
 
+  // Forces upload of all un-synced local device workouts to Cloud Firestore
+  syncLocalWorkoutsToCloud: async (userId?: string): Promise<WorkoutLog[]> => {
+    const uid = api.getCentralUserId(userId);
+    const emailKey = auth.currentUser?.email
+      ? auth.currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')
+      : null;
+    const authUid = auth.currentUser?.uid || null;
 
-  // Central Database Workouts API (Instant 0ms Load + Non-Blocking Cloud Sync)
+    const targetUids = Array.from(new Set([uid, authUid, emailKey].filter(Boolean) as string[]));
+
+    const storageKeys = [
+      `bws_gym_tracker_workouts_${uid}`,
+      `bws_gym_tracker_workouts_v1`,
+      LOCAL_STORAGE_WORKOUTS_KEY,
+    ];
+
+    let localLogs: WorkoutLog[] = [];
+    storageKeys.forEach((key) => {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) localLogs.push(...parsed);
+        }
+      } catch (e) {}
+    });
+
+    localLogs = deduplicateWorkouts([...localLogs, ...getStoredWorkouts()]);
+
+    if (localLogs.length > 0 && targetUids.length > 0) {
+      try {
+        const uploadPromises: Promise<any>[] = [];
+        localLogs.forEach((log) => {
+          targetUids.forEach((tUid) => {
+            const docRef = doc(db, 'users', tUid, 'workouts', log.id);
+            const p = new Promise((resolve) => {
+              const timer = setTimeout(() => resolve(null), 3000);
+              setDoc(docRef, log, { merge: true }).then(() => {
+                clearTimeout(timer);
+                resolve(true);
+              }).catch(() => resolve(null));
+            });
+            uploadPromises.push(p);
+          });
+        });
+        await Promise.all(uploadPromises);
+      } catch (e) {
+        console.warn('Failed to upload local workouts to cloud:', e);
+      }
+    }
+
+    return localLogs;
+  },
+
+  // Central Database Workouts API (Syncs synchronously across devices)
   getWorkouts: async (userId?: string): Promise<WorkoutLog[]> => {
     const uid = api.getCentralUserId(userId);
     const KEY = `bws_gym_tracker_workouts_${uid}`;
-    let localLogs: WorkoutLog[] = [];
+
+    // 1. Upload any pre-existing local device workouts to Cloud Firestore
+    const localLogs = await api.syncLocalWorkoutsToCloud(userId);
+
+    // 2. Query all cloud paths (Auth UID, Email Key, Device Key)
+    const emailKey = auth.currentUser?.email
+      ? auth.currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')
+      : null;
+    const paramKey = userId && userId.includes('@')
+      ? userId.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')
+      : userId;
+    const authUid = auth.currentUser?.uid || null;
+
+    const uidsToQuery = Array.from(new Set([uid, authUid, emailKey, paramKey].filter(Boolean) as string[]));
 
     try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) localLogs = deduplicateWorkouts(JSON.parse(raw));
-      else localLogs = deduplicateWorkouts(getStoredWorkouts());
-    } catch (e) {
-      localLogs = deduplicateWorkouts(getStoredWorkouts());
-    }
+      const remoteLogs: WorkoutLog[] = [];
 
-    // Asynchronous non-blocking Cloud Firestore background sync
-    setTimeout(async () => {
-      try {
-        const q = query(collection(db, 'users', uid, 'workouts'), orderBy('date', 'desc'));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const remoteLogs: WorkoutLog[] = [];
-          snap.forEach((docSnap) => {
+      for (const targetUid of uidsToQuery) {
+        const fetchSnap = new Promise<any>((resolve) => {
+          const timer = setTimeout(() => resolve(null), 3500);
+          const q = query(collection(db, 'users', targetUid, 'workouts'));
+          getDocs(q).then((snap) => {
+            clearTimeout(timer);
+            resolve(snap);
+          }).catch(() => resolve(null));
+        });
+
+        const snap = await fetchSnap;
+        if (snap && !snap.empty) {
+          snap.forEach((docSnap: any) => {
             const data = docSnap.data();
             if (data && !data.deleted) {
               remoteLogs.push(data as WorkoutLog);
             }
           });
-
-          const deduplicated = deduplicateWorkouts(remoteLogs);
-          localStorage.setItem(KEY, JSON.stringify(deduplicated));
-          saveStoredWorkouts(deduplicated);
         }
-      } catch (e) {
-        console.warn('Central database background sync note:', e);
       }
-    }, 0);
+
+      const merged = deduplicateWorkouts([...localLogs, ...remoteLogs]);
+      if (merged.length > 0) {
+        localStorage.setItem(KEY, JSON.stringify(merged));
+        saveStoredWorkouts(merged);
+        return merged;
+      }
+    } catch (e) {
+      console.warn('Cloud workout fetch note:', e);
+    }
 
     return localLogs;
   },
-
 
   logWorkout: async (workout: Omit<WorkoutLog, 'id'>, userId?: string): Promise<WorkoutLog> => {
     const uid = api.getCentralUserId(userId);
@@ -818,7 +890,7 @@ export const api = {
       id: `wlog-${Date.now()}`,
     };
 
-    // 1. Instant 0ms local storage update
+    // 1. Instant local storage update
     let existing: WorkoutLog[] = [];
     try {
       const raw = localStorage.getItem(KEY);
@@ -832,19 +904,22 @@ export const api = {
       saveStoredWorkouts(updated);
     } catch (e) {}
 
-    // 2. Non-blocking background sync to Firebase Cloud Firestore & optional API
-    setTimeout(async () => {
-      try {
-        const docRef = doc(db, 'users', uid, 'workouts', newLog.id);
-        await setDoc(docRef, newLog);
-      } catch (e) {
-        console.warn('Background Firestore workout write note:', e);
-      }
+    // 2. Multi-path Cloud Firestore write (writes to Auth UID and Email path if available)
+    const emailKey = auth.currentUser?.email
+      ? auth.currentUser.email.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')
+      : null;
+    const authUid = auth.currentUser?.uid || null;
+    const uidsToWrite = Array.from(new Set([uid, authUid, emailKey].filter(Boolean) as string[]));
 
-      try {
-        await axios.post(`${API_BASE}/workouts`, newLog, { timeout: 1500 });
-      } catch (e) {}
-    }, 0);
+    try {
+      const writePromises = uidsToWrite.map((targetUid) => {
+        const docRef = doc(db, 'users', targetUid, 'workouts', newLog.id);
+        return setDoc(docRef, newLog, { merge: true });
+      });
+      await Promise.all(writePromises);
+    } catch (e) {
+      console.warn('Firestore workout write note:', e);
+    }
 
     return newLog;
   },
@@ -1026,15 +1101,17 @@ export const api = {
     const uid = api.getCentralUserId(userId);
     const PROFILE_KEY = `bws_user_profile_${uid}`;
 
+    const isAuthenticated = Boolean(auth.currentUser?.email || auth.currentUser?.displayName);
+
     let localProfile: UserProfile = {
       id: uid,
-      name: auth.currentUser?.displayName || (auth.currentUser?.email ? auth.currentUser.email.split('@')[0] : ''),
+      name: auth.currentUser?.displayName || (auth.currentUser?.email ? auth.currentUser.email.split('@')[0] : 'Athlete'),
       currentWeightKg: 75.0,
       targetWeightKg: 70.0,
       heightCm: 175,
       bodyFatPercentage: 15.0,
       fitnessGoal: 'Hypertrophy',
-      isProfileSetupCompleted: false,
+      isProfileSetupCompleted: isAuthenticated,
       updatedAt: new Date().toISOString(),
     };
 
@@ -1048,8 +1125,8 @@ export const api = {
       }
     } catch (e) {}
 
-    // If local profile is already setup, return immediately and sync with cloud in background
-    if (localProfile.isProfileSetupCompleted && localProfile.name && localProfile.name.trim() !== '') {
+    // If profile is setup or user is authenticated, return and sync in background
+    if (localProfile.isProfileSetupCompleted || isAuthenticated) {
       setTimeout(async () => {
         try {
           const docRef = doc(db, 'users', uid, 'profile', 'main');
@@ -1065,13 +1142,13 @@ export const api = {
       return localProfile;
     }
 
-    // If profile is NOT setup locally (e.g. new browser/device or fresh login), AWAIT Firestore to check cloud profile bound to email
+    // AWAIT Firestore to check cloud profile
     try {
       const docRef = doc(db, 'users', uid, 'profile', 'main');
       const snap = await getDoc(docRef);
       if (snap.exists()) {
         const remoteData = snap.data() as UserProfile;
-        if (remoteData && remoteData.isProfileSetupCompleted && remoteData.name && remoteData.name.trim() !== '') {
+        if (remoteData) {
           localStorage.setItem(PROFILE_KEY, JSON.stringify(remoteData));
           return remoteData;
         }

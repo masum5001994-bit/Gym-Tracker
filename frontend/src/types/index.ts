@@ -16,6 +16,38 @@ export interface Exercise {
   alternatives: string[];
   isCustom?: boolean;
   previousSets?: LiveSetLog[];
+  gifUrl?: string;
+  thumbnailUrl?: string;
+  equipment?: string;
+  bodyPart?: string;
+  targetMuscle?: string;
+  instructionSteps?: string[];
+}
+
+export interface ProgramDay {
+  dayNum: number;
+  dayLabel: string;
+  type: 'workout' | 'rest';
+  title: string;
+  focus: string;
+  exercises: {
+    exerciseId: string;
+    exerciseName: string;
+    category: string;
+    defaultSets: number;
+    targetReps: string;
+    restSeconds: number;
+  }[];
+}
+
+export interface CustomProgram {
+  id: string;
+  title: string;
+  description: string;
+  focus: string;
+  isCustom: boolean;
+  createdAt: string;
+  days: ProgramDay[];
 }
 
 export interface Routine {
@@ -34,6 +66,7 @@ export interface LiveSetLog {
   effort?: string; // Easy, Medium, Hard, Max effort, Failed
   completed: boolean;
   isPR?: boolean;
+  unit?: 'kg' | 'lbs';
 }
 
 export interface LiveExerciseLog {
@@ -45,6 +78,7 @@ export interface LiveExerciseLog {
   alternatives: string[];
   sets: LiveSetLog[];
   previousSets?: LiveSetLog[];
+  unit?: 'kg' | 'lbs';
 }
 
 export interface WorkoutLog {

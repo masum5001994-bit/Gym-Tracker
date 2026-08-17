@@ -11,6 +11,8 @@ interface ExerciseImageProps {
   step2Execution?: string;
   step3Execution?: string;
   additionalTips?: string;
+  gifUrl?: string;
+  thumbnailUrl?: string;
 }
 
 // Authentic BWS 4-Panel Custom PDF Studio Guide Photos
@@ -39,11 +41,13 @@ export const ExerciseImage: React.FC<ExerciseImageProps> = ({
   step2Execution,
   step3Execution,
   additionalTips,
+  gifUrl,
+  thumbnailUrl,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
-  const staticImageUrl = EXERCISE_IMAGE_MAP[exerciseName];
+  const activeMediaUrl = gifUrl || thumbnailUrl || EXERCISE_IMAGE_MAP[exerciseName];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -55,18 +59,18 @@ export const ExerciseImage: React.FC<ExerciseImageProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isZoomed]);
 
-  // If exercise has a static 4-panel BWS PDF photo, render the photo with Lightbox Zoom
-  if (staticImageUrl && !imageError) {
+  // If exercise has a media URL or static BWS photo, render with Lightbox Zoom
+  if (activeMediaUrl && !imageError) {
     return (
       <>
         <div
           onClick={() => setIsZoomed(true)}
           className="relative overflow-hidden rounded-2xl group border border-slate-800 shadow-lg cursor-pointer touch-manipulation"
-          title="Click or tap to enlarge BWS PDF guide"
+          title="Click or tap to enlarge visual guide"
         >
           <img
-            src={staticImageUrl}
-            alt={`${exerciseName} BWS PDF Step-by-Step Visual Guide`}
+            src={activeMediaUrl}
+            alt={`${exerciseName} Visual Guide`}
             onError={() => setImageError(true)}
             className={`${className} transition-transform duration-500 group-hover:scale-105 filter brightness-95 contrast-105`}
             loading="lazy"
@@ -115,7 +119,7 @@ export const ExerciseImage: React.FC<ExerciseImageProps> = ({
 
               <div className="relative overflow-hidden rounded-2xl border border-slate-800 max-h-[65vh] bg-slate-950 flex items-center justify-center">
                 <img
-                  src={staticImageUrl}
+                  src={activeMediaUrl}
                   alt={`${exerciseName} High Definition View`}
                   className="max-h-[60vh] w-full object-contain filter brightness-105 contrast-105"
                 />

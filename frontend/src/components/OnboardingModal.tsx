@@ -190,14 +190,30 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
           </div>
 
 
-          <button
-            type="submit"
-            disabled={submitting || !name.trim()}
-            className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 px-6 py-3.5 text-xs font-black text-slate-950 hover:from-amber-300 hover:to-amber-400 active:scale-95 transition-all shadow-lg shadow-amber-500/20 font-condensed uppercase tracking-wider"
-          >
-            <Save className="h-4 w-4" />
-            <span>{submitting ? 'Saving Profile...' : 'START MY TRAINING'}</span>
-          </button>
+          <div className="space-y-2 pt-1">
+            <button
+              type="submit"
+              disabled={submitting || !name.trim()}
+              className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 px-6 py-3.5 text-xs font-black text-slate-950 hover:from-amber-300 hover:to-amber-400 active:scale-95 transition-all shadow-lg shadow-amber-500/20 font-condensed uppercase tracking-wider"
+            >
+              <Save className="h-4 w-4" />
+              <span>{submitting ? 'Saving Profile...' : 'START MY TRAINING'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={async () => {
+                const defaultProfile = await api.saveUserProfile({
+                  name: name.trim() || 'Athlete',
+                  isProfileSetupCompleted: true,
+                });
+                onComplete(defaultProfile);
+              }}
+              className="w-full py-2.5 rounded-2xl text-xs font-bold text-slate-400 hover:text-slate-200 transition text-center uppercase font-condensed tracking-wider"
+            >
+              Skip for now →
+            </button>
+          </div>
         </form>
       </div>
     </div>

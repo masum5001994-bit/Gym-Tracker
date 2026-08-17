@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Moon, Play, AlertCircle, RotateCcw, Edit3, CheckCircle2, Sparkles } from 'lucide-react';
+import { Calendar, Moon, Play, AlertCircle, RotateCcw, Edit3, CheckCircle2, Sparkles, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { WorkoutLog } from '../types';
+import { WorkoutLog, CustomProgram } from '../types';
 import { useAuthContext } from '../context/AuthContext';
 import { triggerHaptic } from '../utils/haptics';
-import { getCustomCycleDays, CustomCycleDay } from '../utils/cycleCustomizer';
+import { getCustomCycleDays, saveCustomCycleDays, CustomCycleDay } from '../utils/cycleCustomizer';
 import {
   getCompletedDayNums,
   getCycleWeekNumber,
   resetCycleCompletion,
+  syncScheduleToCloud,
+  syncScheduleFromCloud,
+  reconcileScheduleFromLogs,
 } from '../utils/cycleCompletion';
 import { AdaptiveRecoveryModal } from './AdaptiveRecoveryModal';
-
-
+import { CloudSyncDiagnosticsModal } from './CloudSyncDiagnosticsModal';
+import { ProgramBuilderModal } from './ProgramBuilderModal';
 
 const REST_DAY_THEME = {
   bg: 'bg-gym-card',
@@ -86,17 +89,42 @@ export const WeeklyScheduleCard: React.FC = () => {
   const [completedDayNums, setCompletedDayNums] = useState<number[]>(getCompletedDayNums());
   const [weekNumber, setWeekNumber] = useState<number>(getCycleWeekNumber());
   const [adaptiveModalOpen, setAdaptiveModalOpen] = useState<boolean>(false);
+  const [diagnosticsOpen, setDiagnosticsOpen] = useState<boolean>(false);
+  const [programBuilderOpen, setProgramBuilderOpen] = useState<boolean>(false);
+  const [syncing, setSyncing] = useState<boolean>(false);
 
+  const handleProgramSaved = (program: CustomProgram) => {
+    const formattedDays: CustomCycleDay[] = program.days.map((d) => ({
+      dayNum: d.dayNum,
+      dayLabel: d.dayLabel,
+      type: d.type,
+      title: d.title,
+      focus: d.focus,
+      exerciseCount: d.exercises.length,
+      estimatedMinutes: d.exercises.length * 8 || 45,
+      tags: d.exercises.slice(0, 3).map((e) => e.category),
+      exercisePreview: d.exercises.map((e) => e.exerciseName),
+    }));
+    saveCustomCycleDays(formattedDays);
+    setCycleDays(formattedDays);
+    window.dispatchEvent(new Event('cycle_days_updated'));
+  };
 
-  const fetchLogs = () => {
-    api
-      .getWorkouts(user?.uid)
-      .then(setWorkoutLogs)
-      .catch(console.error);
+  const fetchLogs = async () => {
+    try {
+      const logs = await api.getWorkouts(user?.uid);
+      setWorkoutLogs(logs);
+      const reconciled = reconcileScheduleFromLogs(logs);
+      setCompletedDayNums(reconciled);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
-    fetchLogs();
+    syncScheduleFromCloud(user?.uid).then(() => {
+      fetchLogs();
+    });
 
     const handleUpdate = () => {
       setCycleDays(getCustomCycleDays());
@@ -167,7 +195,31 @@ export const WeeklyScheduleCard: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+            <button
+              onClick={() => {
+                triggerHaptic('medium');
+                setProgramBuilderOpen(true);
+              }}
+              className="flex items-center gap-1.5 text-xs font-black text-cyan-300 bg-cyan-500/20 hover:bg-cyan-500/30 px-3.5 py-1.5 rounded-xl border border-cyan-400/50 uppercase tracking-wider font-condensed transition apple-press shadow-md"
+              title="Create your own custom workout program"
+            >
+              <Plus className="h-3.5 w-3.5 text-cyan-300 stroke-[3]" />
+              <span>+ Create Program</span>
+            </button>
+
+            <button
+              onClick={() => {
+                triggerHaptic('medium');
+                setDiagnosticsOpen(true);
+              }}
+              className="flex items-center gap-1.5 text-xs font-black text-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 px-3 py-1.5 rounded-xl border border-emerald-500/40 uppercase tracking-wider font-condensed transition apple-press shadow-sm"
+              title="Inspect accounts & sync cloud data"
+            >
+              <RotateCcw className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Sync Cloud 🔄</span>
+            </button>
+
             <button
               onClick={() => {
                 triggerHaptic('light');
@@ -368,6 +420,26 @@ export const WeeklyScheduleCard: React.FC = () => {
           );
         })}
       </div>
+
+      <AdaptiveRecoveryModal
+        isOpen={adaptiveModalOpen}
+        onClose={() => setAdaptiveModalOpen(false)}
+        daysIdle={daysSinceLastWorkout}
+        activeDayTitle={activeDay.title}
+        routineId={activeDay.routineId || 'routine-1'}
+      />
+
+      <CloudSyncDiagnosticsModal
+        isOpen={diagnosticsOpen}
+        onClose={() => setDiagnosticsOpen(false)}
+        onSyncComplete={fetchLogs}
+      />
+
+      <ProgramBuilderModal
+        isOpen={programBuilderOpen}
+        onClose={() => setProgramBuilderOpen(false)}
+        onProgramSaved={handleProgramSaved}
+      />
     </div>
   );
 };
