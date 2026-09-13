@@ -19,6 +19,7 @@ import { CloudSyncDiagnosticsModal } from './CloudSyncDiagnosticsModal';
 import { ProgramBuilderModal } from './ProgramBuilderModal';
 import { RoutineTierSelector, RoutineTier } from './RoutineTierSelector';
 import { getAllPrograms, setActiveProgramId, getActiveProgramId } from '../utils/customProgramStorage';
+import { MonthlyCalendarCard } from './MonthlyCalendarCard';
 
 const REST_DAY_THEME = {
   bg: 'bg-gym-card',
@@ -96,6 +97,7 @@ export const WeeklyScheduleCard: React.FC = () => {
   const [syncing, setSyncing] = useState<boolean>(false);
   const [activeTier, setActiveTier] = useState<RoutineTier>('all');
   const [allPrograms, setAllPrograms] = useState<CustomProgram[]>(getAllPrograms());
+  const [scheduleMode, setScheduleMode] = useState<'monthly' | 'split'>('monthly');
 
   const handleActivateProgram = (program: CustomProgram) => {
     triggerHaptic('success');
@@ -257,6 +259,54 @@ export const WeeklyScheduleCard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* VIEW MODE TOGGLE (MONTHLY vs SPLIT) */}
+      <div className="flex items-center justify-between gap-3 border-b border-gym-border/80 pb-3 flex-wrap">
+        <div className="flex items-center gap-2 bg-slate-900/90 p-1 rounded-2xl border border-slate-800">
+          <button
+            onClick={() => {
+              triggerHaptic('light');
+              setScheduleMode('monthly');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition font-condensed ${
+              scheduleMode === 'monthly'
+                ? 'bg-cyan-400 text-slate-950 shadow-md'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Calendar className="h-3.5 w-3.5" />
+            <span>📅 Month-by-Month View</span>
+          </button>
+
+          <button
+            onClick={() => {
+              triggerHaptic('light');
+              setScheduleMode('split');
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition font-condensed ${
+              scheduleMode === 'split'
+                ? 'bg-cyan-400 text-slate-950 shadow-md'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>⚡ 7-Day Quick Split</span>
+          </button>
+        </div>
+
+        <span className="text-[11px] font-mono text-slate-400 font-bold">
+          {scheduleMode === 'monthly' ? 'Showing full monthly calendar grid' : 'Showing active 7-day rolling cycle'}
+        </span>
+      </div>
+
+      {/* RENDER MONTHLY CALENDAR CARD IF MONTHLY MODE IS ACTIVE */}
+      {scheduleMode === 'monthly' ? (
+        <MonthlyCalendarCard
+          cycleDays={cycleDays}
+          workoutLogs={workoutLogs}
+        />
+      ) : (
+        <>
 
       {/* HERO TEXT HEADER */}
       <div className="space-y-2 border-b border-gym-border pb-4">
@@ -506,6 +556,8 @@ export const WeeklyScheduleCard: React.FC = () => {
           );
         })}
       </div>
+      </>
+      )}
 
       <AdaptiveRecoveryModal
         isOpen={adaptiveModalOpen}
