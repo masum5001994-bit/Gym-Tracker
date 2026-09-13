@@ -46,6 +46,7 @@ export interface CustomProgram {
   description: string;
   focus: string;
   isCustom: boolean;
+  tier?: 'beginner' | 'intermediate' | 'personal';
   createdAt: string;
   days: ProgramDay[];
 }

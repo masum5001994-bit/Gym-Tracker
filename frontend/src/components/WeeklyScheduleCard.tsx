@@ -17,6 +17,8 @@ import {
 import { AdaptiveRecoveryModal } from './AdaptiveRecoveryModal';
 import { CloudSyncDiagnosticsModal } from './CloudSyncDiagnosticsModal';
 import { ProgramBuilderModal } from './ProgramBuilderModal';
+import { RoutineTierSelector, RoutineTier } from './RoutineTierSelector';
+import { getAllPrograms, setActiveProgramId, getActiveProgramId } from '../utils/customProgramStorage';
 
 const REST_DAY_THEME = {
   bg: 'bg-gym-card',
@@ -92,8 +94,12 @@ export const WeeklyScheduleCard: React.FC = () => {
   const [diagnosticsOpen, setDiagnosticsOpen] = useState<boolean>(false);
   const [programBuilderOpen, setProgramBuilderOpen] = useState<boolean>(false);
   const [syncing, setSyncing] = useState<boolean>(false);
+  const [activeTier, setActiveTier] = useState<RoutineTier>('all');
+  const [allPrograms, setAllPrograms] = useState<CustomProgram[]>(getAllPrograms());
 
-  const handleProgramSaved = (program: CustomProgram) => {
+  const handleActivateProgram = (program: CustomProgram) => {
+    triggerHaptic('success');
+    setActiveProgramId(program.id);
     const formattedDays: CustomCycleDay[] = program.days.map((d) => ({
       dayNum: d.dayNum,
       dayLabel: d.dayLabel,
@@ -108,6 +114,11 @@ export const WeeklyScheduleCard: React.FC = () => {
     saveCustomCycleDays(formattedDays);
     setCycleDays(formattedDays);
     window.dispatchEvent(new Event('cycle_days_updated'));
+  };
+
+  const handleProgramSaved = (program: CustomProgram) => {
+    handleActivateProgram(program);
+    setAllPrograms(getAllPrograms());
   };
 
   const fetchLogs = async () => {
@@ -169,8 +180,83 @@ export const WeeklyScheduleCard: React.FC = () => {
   // Count workout days to pick unique theme per workout
   let workoutDayCounter = 0;
 
+  const counts = {
+    all: allPrograms.length,
+    beginner: allPrograms.filter((p) => p.tier === 'beginner').length,
+    intermediate: allPrograms.filter((p) => p.tier === 'intermediate').length,
+    personal: allPrograms.filter((p) => p.tier === 'personal' || p.isCustom).length,
+  };
+
+  const filteredPrograms = activeTier === 'all'
+    ? allPrograms
+    : allPrograms.filter((p) => (activeTier === 'personal' ? p.isCustom || p.tier === 'personal' : p.tier === activeTier));
+
+  const activeProgId = getActiveProgramId();
+
   return (
     <div className="w-full rounded-3xl glass-panel-impeccable p-4 sm:p-6 border border-gym-border shadow-2xl space-y-6 text-gym-text">
+
+      {/* ROUTINE TIER SELECTOR HUB */}
+      <RoutineTierSelector
+        activeTier={activeTier}
+        onSelectTier={(tier) => {
+          triggerHaptic('light');
+          setActiveTier(tier);
+        }}
+        counts={counts}
+      />
+
+      {/* TIER PROGRAMS CAROUSEL / SELECTOR */}
+      {filteredPrograms.length > 0 && (
+        <div className="space-y-2 border-b border-gym-border/80 pb-4">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase text-cyan-400 font-mono tracking-widest">
+              Available Split Programs ({filteredPrograms.length})
+            </span>
+            <span className="text-[10px] text-slate-400">Tap to activate split</span>
+          </div>
+
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
+            {filteredPrograms.map((prog) => {
+              const isSelected = activeProgId === prog.id;
+              return (
+                <div
+                  key={prog.id}
+                  onClick={() => handleActivateProgram(prog)}
+                  className={`min-w-[220px] sm:min-w-[260px] p-3.5 rounded-2xl glass-card border transition cursor-pointer flex flex-col justify-between space-y-2.5 ${
+                    isSelected
+                      ? 'border-cyan-400 bg-cyan-950/40 ring-2 ring-cyan-400/50 shadow-lg'
+                      : 'border-slate-800 hover:border-slate-700 bg-slate-900/60'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-[9px] font-black uppercase text-cyan-300 font-mono">
+                        {prog.days.filter((d) => d.type === 'workout').length}-Day Split
+                      </span>
+                      <h4 className="text-xs font-bold text-slate-100 line-clamp-1">{prog.title}</h4>
+                    </div>
+
+                    {isSelected ? (
+                      <span className="px-2 py-0.5 rounded-md bg-cyan-400 text-slate-950 text-[9px] font-black uppercase tracking-wider font-mono shrink-0">
+                        ACTIVE
+                      </span>
+                    ) : (
+                      <button className="px-2 py-0.5 rounded-md bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-slate-300 text-[9px] font-bold uppercase tracking-wider font-mono shrink-0 transition">
+                        Select
+                      </button>
+                    )}
+                  </div>
+
+                  <p className="text-[10px] text-slate-400 line-clamp-2 leading-relaxed">
+                    {prog.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* HERO TEXT HEADER */}
       <div className="space-y-2 border-b border-gym-border pb-4">
